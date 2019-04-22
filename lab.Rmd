@@ -1,0 +1,100 @@
+---
+title: "<i class='fas fa-flask' style='margin-left:4px;margin-right:4px;'></i> Lab"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    number_sections: true
+    theme: flatly
+    highlight: tango
+    df_print: default
+    code_folding: "none"
+    self_contained: false
+    keep_md: false
+    encoding: 'UTF-8'
+    css: "assets/lab.css"
+---
+
+```{r,child="assets/header-lab.Rmd"}
+```
+
+This page contains links to different tutorials that are used in this course. The tutorials are well documented and should be easy to follow.
+
+<div class="instruction">
+Input code blocks are displayed like shown below. The code language is displayed above the block. Shell scripts (**SH**) are to be executed in the linux terminal such as bash. **R** scripts are to be run in R either through the terminal, RGui or RStudio.
+
+```{sh,eval=FALSE,block.title=TRUE}
+command
+```
+
+<i class="fas fa-exclamation-circle"></i> Note &nbsp; <i class="fas fa-lightbulb"></i> Tip &nbsp; <i class="fas fa-comments"></i> Discuss &nbsp; <i class="fas fa-clipboard-list"></i> Task
+</div>
+
+<br>
+
+# Introduction
+
+In the links below, there are information about tools and data that we will used during the other labs. Please make sure you know the data and how to use R before you proceed with the other labs.
+
+<div class="large">
+* [Introduction to R](lab_r.html)
+* [Retrieving annotation](lab_annotation.html)
+</div>
+
+# Data
+
+In most of the exercises, we will use RNA-Seq data from the A431 cell line. It is an epidermoid carcinoma cell line which is often used to study cancer and the cell cycle, and as a sort of positive control of epidermal growth factor receptor (EGFR) expression. A431 cells express very high levels of EGFR, in contrast to normal human fibroblasts.
+
+The RNA-Seq data that we are going to use are from an experiment where the A431 cells were treated with gefinitib, which is an EGFR inhibitor and is used (under the trade name Iressa) as a drug to treat cancers with mutated and overactive EGFR. In the experiment, RNA was extracted at four time points: before the gefinitib treatment (t=0), and two, six and twenty-four hours after treatment (t=2, t=6, t=24, respectively), and sequenced using an Illumina HiSeq instrument in triplicates (thus there are 3x4=12 samples).
+
+This data set or parts of it will be used in the labs on read mapping, transcript assembly, visualization, quality control and differential expression. There are many relevant questions that could be asked based on these measurements. In the QC exercise we are going to examine if the RNA libraries that we work with are what we think they are or if there are some missannotations on the datasets. In the isoform exercises we are going to look at some specific regions where the mass-spectrometry data indicated that novel exons or splice variants could be present at the protein level. We will use (part of) the RNA-Seq data to examine if there is corresponding evidence on the mRNA level, and how different software tools could be used to detect novel gene variants.
+
+# Quality control
+
+Before doing any other analysis on mapped RNA-seq reads it is always important to do quality control of your mapped reads and that you do not have any obvious errors in your RNA-seq data.
+
+<div class="large">
+* [Quality control](lab_qc.html)
+</div>
+
+# Mapping
+
+This section contains information on how to map reads to a reference genome. In the tutorial you will learn how to use both STAR and HISAT2.
+
+<div class="large">
+* [Mapping reads using STAR](lab_mapping_star.html)
+* [Mapping reads using HISAT2](lab_mapping_hisat2.html)
+* [Mapping reads using Kallisto](lab_kallisto.html)
+</div>
+
+# IGV
+
+Visualising mapped reads using IGV.
+
+<div class="large">
+* [Introduction to IGV](lab_igv.html)
+</div>
+
+# Quantification
+
+# Differential gene expression
+
+There are many software packages for differential expression analysis of RNA-seq data.
+
+Several tools, such as DESeq2 and edgeR, start from read counts per gene and use the discrete nature of the data to do statistical tests appropriate for this kind of data. It can be argued that that such counts will never give quite the correct results because the presence of alernative isoforms confound the read counting. Cuffdiff therefore combines isoform-level quantification and differential expression testing into one framework and claim that they achieve better results because they are able to take into account the uncertainty of isoform quantification.
+
+<div class="large">
+* [DGE using DEseq2](lab_dge.html)
+* [DGE using Sleuth]()
+* [DGE using multivariate analysis in SIMCA]()
+</div>
+
+# Gene set analysis
+
+We will perform gene-set analysis on the output from the tutorial on differential expression analysis of RNA-seq data using DESeq2.
+
+<div class="large">
+* [Gene set analysis]()
+</div>
+
