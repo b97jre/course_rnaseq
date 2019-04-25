@@ -1,6 +1,6 @@
 # course_rnaseq
 
-This repo contains the course material for NBIS course **Workshop on RNA-Seq**. The rendered view of this repo is available [here](docs/index.html).
+This repo contains the course material for NBIS course **Workshop on RNA-Seq**. The rendered view of this repo is available [here](https://royfrancis.github.io/course_rnaseq/).
 
 ## Descriptions
 
