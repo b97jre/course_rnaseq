@@ -21,13 +21,13 @@ These are steps to be completed before the course.
 
 * A SUPR/SNIC account is needed to use UPPMAX resources. If you do not already have one, [create an account](https://supr.snic.se/).
 
-* Log in to [SUPR/SNIC](https://supr.snic.se/) and request membership to the project **g2018025**.
+* Log in to [SUPR/SNIC](https://supr.snic.se/) and request membership to the project **g2019008**.
 
 * Make sure you can connect to the Uppmax cluster Rackham through a terminal. If you are on a PC, we recommend [MobaXterm](http://mobaxterm.mobatek.net). Type `ssh user@rackham.uppmax.uu.se` and then enter your password. The password will not be visible as you type.
 
 * If you still feel uncertain how to work in a terminal, please take time to do the first three parts in the *Unix tutorial for beginners* that can be found here http://www.ee.surrey.ac.uk/Teaching/Unix/ before the workshop starts. Otherwise you will not be able to take in the practical parts.
 
-* Make sure that you can read and write in the workshop folder. Go to `/proj/g2018025/nobackup/` and create a directory with your username. You will work inside this directory for the course. If you cannot write to the folder, the most likely reason is that you have not requested acess to the workshop project via SUPR.  
+* Make sure that you can read and write in the workshop folder. Go to `/proj/g2019008/nobackup/` and create a directory with your username. You will work inside this directory for the course. If you cannot write to the folder, the most likely reason is that you have not requested acess to the workshop project via SUPR.  
 <i class="fas fa-exclamation-circle"></i> Note that it may take an hour or so from request approval, before you can actually write to the folder.  
 <i class="fas fa-exclamation-circle"></i> We will check before the workshop that all students have logged in and done this, so do not forget!  
   
@@ -42,3 +42,5 @@ These are steps to be completed before the course.
 ```{r,eval=FALSE,block.title=TRUE}
 install.packages("DESeq2","edgeR","tidyverse","biomaRt")
 ```
+
+**End of document.**

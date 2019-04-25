@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Johan Reimegård | 25-Apr-2019" />
+
+
+<title>Integrative-omics</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="assets/lab.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html"><b>NBIS | Workshop on RNA-Seq</b></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="schedule.html">
+    <span class="fa fa-clipboard-list"></span>
+     
+    Schedule
+  </a>
+</li>
+<li>
+  <a href="lab.html">
+    <span class="fa fa-flask"></span>
+     
+    Lab
+  </a>
+</li>
+<li>
+  <a href="precourse.html">
+    <span class="fa fa-pencil-alt"></span>
+     
+    Precourse
+  </a>
+</li>
+<li>
+  <a href="info.html">
+    <span class="fa fa-info"></span>
+     
+    Info
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Integrative-omics</h1>
+<h3 class="subtitle">Workshop on RNA-Seq</h3>
+<h4 class="author"><b>Johan Reimegård</b> | 25-Apr-2019</h4>
+
+</div>
+
+
+<!-- rmd lab header -->
+<!-- custom fonts -->
+<p><link href="https://fonts.googleapis.com/css?family=Roboto|Source+Sans+Pro:300,400,600|Ubuntu+Mono&amp;subset=latin-ext" rel="stylesheet"></p>
+<p><br></p>
+<p class="large danger" ">
+THIS TOPIC NEEDS TO BE REVIEWED
+</p>
+<p>We are increasingly seeing studies where mutiple types of data are generated from the same samples or same experiment. And often these diverse datasets need to be integrated together to reveal insights that may not have been possible using a single dataset. Such types of analyses are referred to as integrative-omics. ‘Omics’ because datasets are usually ‘genome-wide’ genome, transcriptome, methylome, proteome, metabolome etc.</p>
+<p>We will use RNA-seq and quantitative mass-spectrometry (MS) data sets from the human A431 cell line. These data were measured by a group at SciLifeLab Stockholm in a ‘proteogenomics’ study where the aim was to discover new genes or gene variants by deep proteomic profiling using an MS method, and mapping the obtained peptides back to the genome. One of the advantages of RNA-Seq data compared to microarrays is that you get isoform-level information ‘for free’ in addition to gene-level information.</p>
+<p>The RNA-seq data was obtained to see if there was RNA-level support for the predicted novel peptides and transcript variants. We will look at one locus that was flagged by the research group as being interesting, and see what the RNA-seq data look like for that gene.</p>
+<div id="strategies-for-using-the-rna-seq-data" class="section level2">
+<h2><span class="header-section-number">0.1</span> Strategies for using the RNA-seq data</h2>
+<p>There are different ways to find out how the RNA-seq data shows the <em>RAB11FIP5</em> gene to be expressed. Roughly speaking, we can talk about three different strategies:</p>
+<ul>
+<li>Mapping the reads to a reference genome and quantifying the gene and isoform FPKMs<br />
+</li>
+<li>Mapping the reads to a reference genome and assembling transcripts based on the mapping (reference guided assembly)<br />
+</li>
+<li>Assembling the reads <em>de-novo</em>, ignoring the reference genome for now</li>
+</ul>
+<p>In order to make these steps computationally feasible during the lab, we have extracted only those sequences that mapped to the <em>RAB11FIP5</em> gene in each sample. These “sub-FASTQ” files can be found in <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/RAB11FIP5_fastqFiles</code>.</p>
+<p>To do the reference guided assembly yourself go to <a href="isoform-lab">Reference guided assembly using Cufflinks or Stringtie</a>.</p>
+<p>This link also contains information on how to quantify already annotated genes and isoforms.</p>
+<p>To do the <em>de novo</em> assembly yourself go to <a href="isoform-denovo">Isoform detection using RNA-seq <em>de novo</em> Assembly</a>.</p>
+</div>
+<div id="visualise-isoform-data" class="section level2">
+<h2><span class="header-section-number">0.2</span> Visualise isoform data</h2>
+<p>For the gene <em>RAB11FIP5</em> you will now hopefully have generated your own data that you can look at. If everything worked you will now have:</p>
+<ul>
+<li>One or two BAM files with short reads mapped to the genome using HISAT2 and/or STAR</li>
+<li>One GTF file containing different isoforms of <em>RAB11FIP5</em> assembled with Cufflinks and/or Stringtie based on the short reads that mapped to the genome</li>
+<li>One BAM file with <strong>Trinity</strong> assembled transcripts mapped to the genome</li>
+</ul>
+<div id="importing-reference-based-isoform-info-for-the-rab11fip5-gene" class="section level3">
+<h3><span class="header-section-number">0.2.1</span> Importing reference based isoform info for the <em>RAB11FIP5</em> gene</h3>
+<p>Since it takes time to generate all data, we have already created other files that you can also download and view in your browser. This includes result files for the subset of reads that map to the <em>RAB11FIP5</em> gene. These mappings have been used for reference based assembly of isoforms.</p>
+<p>You can find all BAM files and GTF files for all samples here <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/otherData/refBasedAssembly/RAB11FIP</code>. You can then view them in IGV using “Import from URL”.</p>
+</div>
+<div id="importing-de-novo-assembled-transcripts-mapped-to-the-rab11fip5-gene" class="section level3">
+<h3><span class="header-section-number">0.2.2</span> Importing de novo assembled transcripts mapped to the <em>RAB11FIP5</em> gene</h3>
+<p>We have also created result files from <em>de novo</em> transcriptome assembly using the the subset of reads that map to the <em>RAB11FIP5</em> gene. The assembled transcripts were then mapped back to the genome.</p>
+<p>You can download all BAM files and GTF files for all samples from uppmax from here <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/otherData/deNovo/BAMfiles</code></p>
+</div>
+</div>
+<div id="importing-reference-based-isoform-info-to-the-genome" class="section level2">
+<h2><span class="header-section-number">0.3</span> Importing reference based isoform info to the genome</h2>
+<p>In addition, we provide result files for <em>all</em> reads that were mapped to the genome. These mappings were used for reference based assembly of isoforms across the entire genome. There is a GTF file with the final merged isoform information from all 12 samples here</p>
+<p><code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/otherData/refBasedAssembly/Genome/GTFfiles/</code>.</p>
+</div>
+<div id="importing-the-peptide-track-for-the-rab11fip5-gene-and-the-genome" class="section level2">
+<h2><span class="header-section-number">0.4</span> Importing the peptide track for the <em>RAB11FIP5</em> gene and the genome</h2>
+<p>As mentioned above, we will look at some identified peptides from a mass-spectrometry experiment, and compare those with RNA-seq data from the same cell line.</p>
+<p>You can download the BED file containing all peptides mapped to the genome from uppmax <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/otherData</code> .</p>
+<p>From the name of the BED file (human_A431_global-TDA-FDR1pc_green-known_red-novel.bed), IGV will automatically know to color the track according to peptide status (green for annotated peptides, red for novel peptides).</p>
+</div>
+<div id="importing-the-pac-bio-reads-mapped-to-the-genome" class="section level1">
+<h1><span class="header-section-number">1</span> Importing the Pac bio reads mapped to the genome</h1>
+<p>You can download the BAM file containing all PacBio reads mapped to the genome from uppmax</p>
+<p><code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/otherData/pacbio/bamfile/</code>.</p>
+<p>How do the PacBio reads from full length transcripts compare to the transcripts assembled from short reads?</p>
+<p><strong>End of document</strong></p>
+</div>
+
+
+<div class="footer">
+<div class="container" style="padding-top:5px;padding-bottom:5px;">
+<p>
+<span style="float:left; vertical-align:middle">
+<b>2019 </b><a href="https://nbis.se/">NBIS</a> | <a href="https://www.scilifelab.se/">SciLifeLab</a>
+</span>
+<span style="float:right; vertical-align:middle">
+<span class="footericon" style="padding-right:4px; padding-left:4px">
+<a href="https://nbis.se/"><i class="fas fa-globe-americas"></i></a>
+</span>
+<span class="footericon" style="padding-right:4px; padding-left:4px">
+<a href="https://twitter.com/NBISwe"><i class="fab fa-twitter"></i></a>
+</span>
+<span class="footericon" style="padding-left:4px">
+<a href="https://www.linkedin.com/company/nbisweden/"><i class="fab fa-linkedin"></i></a>
+</span>
+</span>
+</p>
+</div>
+</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

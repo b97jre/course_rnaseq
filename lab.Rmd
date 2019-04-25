@@ -35,66 +35,99 @@ command
 
 # Introduction
 
-In the links below, there are information about tools and data that we will used during the other labs. Please make sure you know the data and how to use R before you proceed with the other labs.
+Most of the analyses is carried out in R and it will be useful to learn some basic R. 
 
-<div class="large">
-* [Introduction to R](lab_r.html)
-* [Retrieving annotation](lab_annotation.html)
-</div>
+[<i class="fas fa-link"></i> <span class="large">Introduction to R</span>](lab_r.html)  
 
-# Data
+This topic covers retrieving annotation data needed for RNA-seq analyses. These include gene annotation IDs such as mapping between Ensembl IDs and Gene IDs, GO terms and transcript IDs. We also cover retrieving genomic data from Ensembl and GEO.
 
-In most of the exercises, we will use RNA-Seq data from the A431 cell line. It is an epidermoid carcinoma cell line which is often used to study cancer and the cell cycle, and as a sort of positive control of epidermal growth factor receptor (EGFR) expression. A431 cells express very high levels of EGFR, in contrast to normal human fibroblasts.
+[<i class="fas fa-link"></i> <span class="large">Retrieving annotation data</span>](lab_download.html)
 
-The RNA-Seq data that we are going to use are from an experiment where the A431 cells were treated with gefinitib, which is an EGFR inhibitor and is used (under the trade name Iressa) as a drug to treat cancers with mutated and overactive EGFR. In the experiment, RNA was extracted at four time points: before the gefinitib treatment (t=0), and two, six and twenty-four hours after treatment (t=2, t=6, t=24, respectively), and sequenced using an Illumina HiSeq instrument in triplicates (thus there are 3x4=12 samples).
+# Main lab
+## Data
 
-This data set or parts of it will be used in the labs on read mapping, transcript assembly, visualization, quality control and differential expression. There are many relevant questions that could be asked based on these measurements. In the QC exercise we are going to examine if the RNA libraries that we work with are what we think they are or if there are some missannotations on the datasets. In the isoform exercises we are going to look at some specific regions where the mass-spectrometry data indicated that novel exons or splice variants could be present at the protein level. We will use (part of) the RNA-Seq data to examine if there is corresponding evidence on the mRNA level, and how different software tools could be used to detect novel gene variants.
+In most of the exercises, we will use RNA-seq data (Illumina short reads) from the human A431 cell line. It is an epidermoid carcinoma cell line which is often used to study cancer and the cell cycle, and as a sort of positive control of epidermal growth factor receptor (EGFR) expression. A431 cells express very high levels of EGFR, in contrast to normal human fibroblasts.
 
-# Quality control
+The A431 cells were treated with gefinitib, which is an EGFR inhibitor and is used (under the trade name Iressa) as a drug to treat cancers with mutated and overactive EGFR. In the experiment, RNA was extracted at four time points: before the gefinitib treatment (t=0), and two, six and twenty-four hours after treatment (t=2, t=6, t=24, respectively), and sequenced using an Illumina HiSeq instrument in triplicates (thus there are 3x4=12 samples).
+
+This data set or parts of it will be used in the labs on read mapping, transcript assembly, visualization, quality control and differential expression. There are many relevant questions that could be asked based on these measurements. In the QC exercise, we are going to examine if the RNA libraries that we work with are what we think they are or if there is any mislabelling. In the isoform exercise, we are going to look at some specific regions where the mass-spectrometry data indicated that novel exons or splice variants could be present at the protein level. We will use (part of) the RNA-seq data to examine if there is corresponding evidence on the mRNA level, and how different software tools could be used to detect novel gene variants.
+
+## Quality control
 
 Before doing any other analysis on mapped RNA-seq reads it is always important to do quality control of your mapped reads and that you do not have any obvious errors in your RNA-seq data.
 
-<div class="large">
-* [Quality control](lab_qc.html)
-</div>
+[<i class="fas fa-link"></i> <span class="large">Quality control</span>]()
 
-# Mapping
+## Mapping
 
-This section contains information on how to map reads to a reference genome. In the tutorial you will learn how to use both STAR and HISAT2.
+This section contains information on how to map reads to a reference genome using splice-aware aligner STAR.
 
-<div class="large">
-* [Mapping reads using STAR](lab_mapping_star.html)
-* [Mapping reads using HISAT2](lab_mapping_hisat2.html)
-* [Mapping reads using Kallisto](lab_kallisto.html)
-</div>
+[<i class="fas fa-link"></i> <span class="large">Mapping reads using STAR</span>]()
 
-# IGV
+## IGV
 
-Visualising mapped reads using IGV.
+Mapped reads in BAM files are visualised using integrated genome viewer.
 
-<div class="large">
-* [Introduction to IGV](lab_igv.html)
-</div>
+[<i class="fas fa-link"></i> <span class="large">Using IGV</span>](lab_igv.html)
 
-# Quantification
+## Quantification
 
-# Differential gene expression
+## Differential gene expression
 
-There are many software packages for differential expression analysis of RNA-seq data.
+We find genes that are differentially expressed between our time points.
 
-Several tools, such as DESeq2 and edgeR, start from read counts per gene and use the discrete nature of the data to do statistical tests appropriate for this kind of data. It can be argued that that such counts will never give quite the correct results because the presence of alernative isoforms confound the read counting. Cuffdiff therefore combines isoform-level quantification and differential expression testing into one framework and claim that they achieve better results because they are able to take into account the uncertainty of isoform quantification.
+[<i class="fas fa-link"></i> <span class="large">DGE using DEseq2</span>](lab_dge.html)  
 
-<div class="large">
-* [DGE using DEseq2](lab_dge.html)
-* [DGE using Sleuth]()
-* [DGE using multivariate analysis in SIMCA]()
-</div>
+## Gene set analysis
 
-# Gene set analysis
+We will perform gene-set analysis on the differentially expressed genes to place them into a function context and explain biological consequences of DE.
 
-We will perform gene-set analysis on the output from the tutorial on differential expression analysis of RNA-seq data using DESeq2.
+[<i class="fas fa-link"></i> <span class="large">Gene set analysis</span>]()
 
-<div class="large">
-* [Gene set analysis]()
-</div>
+# Bonus labs
 
+## Mapping using HISAT2
+
+Reads are mapped to a reference genome using splice-aware aligner HISAT2. HISAT2 is fast and has lower memory requirements than STAR. It is possible to run HISAT2 on your own laptop.
+
+[<i class="fas fa-link"></i> <span class="large">Mapping reads using HISAT2</span>]()
+
+## Pseudoaligners
+
+Kallisto uses FastQ reads and a reference transcriptome (cDNA+ncRNA) to quantify transcripts using rapid pseudo-alignment along with bootstrap replicates to assess quantification inaccuracy. Kallisto is significantly faster than STAR or HISAT2 and has a small memory footprint. Differential gene expression is carried out using Sleuth which utilises bootstrap error margins.
+
+[<i class="fas fa-link"></i> <span class="large">Mapping and quantification using Kallisto, DGE using Sleuth</span>](lab_kallisto.html)  
+
+## small RNA analyses
+
+RNA-seq differential analyses workflow on microRNAs from Fruit fly.
+
+[<i class="fas fa-link"></i> <span class="large">Small RNA-seq analyses</span>](lab_smallrna.html)
+
+### Data
+
+This dataset contains a few small RNA libraries, from *Drosophila melanogaster* (fruit fly) embryos and two cell lines (KC167 cells derived from whole embryos, and ML-DmD32 cells derived from adult wing discs). This is a subset of a much larger data set used to study microRNAs and other small RNAs in Drosophila. These data sets are described more in [this paper](http://genome.cshlp.org/content/24/7/1236.full).
+
+## Assembly & annotation
+
+Raw sequencing short reads are assembled into transcripts using two approaches. Genome-guided assembly using HiSat2 and StringTie. De-novo transcriptome assembly using Trinity. Assembled transcriptomes are functionally annotated to identify genes.
+
+[<i class="fas fa-link"></i> <span class="large">Reference-guided assembly using StringTie</span>](lab_assembly.html)  
+[<i class="fas fa-link"></i> <span class="large">De-novo assembly using Trinity</span>](lab_assembly.html)  
+[<i class="fas fa-link"></i> <span class="large">Transcriptome annotation</span>](lab_annotation.html)
+
+## Integrative-omics
+
+### Data
+
+**PacBio long reads**
+
+This data set contains three PacBio reads for the gene RAB11FIP5, extracted from a full-length RNA sequencing data set released by PacBio in 2014. For more info, [go here](https://www.pacb.com/blog/data-release-whole-human-transcriptome/).
+
+**Peptide data**
+
+The peptide data set contains mapped peptide fragments from mass spectrometry (MS) carried out on protein samples from A431 cells. These data were measured by a group at SciLifeLab Stockholm in a ‘proteogenomics’ study where the aim was to discover new genes or gene variants by deep proteomic profiling using an MS method, and mapping the obtained peptides back to the genome. How it was possible to map MS data onto the human genome is explained [here](http://www.nature.com/nmeth/journal/v11/n1/full/nmeth.2732.html).
+
+[<i class="fas fa-link"></i> <span class="large">Integrative-omics</span>](lab_integration.html)
+
+**End of document**

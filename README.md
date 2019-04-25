@@ -16,10 +16,10 @@ You are reading this file now. Nothing to do here.
 This file generates the home page. **Make sure that the date and location is correct**. Verify links.
 
 **schedule.Rmd**  
-This file generates the schedule page. **The start time of the course is set to `09:00:00`. Change if needed**.
+This file generates the schedule page. **The start time of the course is set to `09:00:00`. Change if needed**. It is assumed that the course starts at the same time everyday.  
 
 **schedule.csv**  
-This table holds the schedule information. Edit in a spreadsheet or text editor. Columns are delimited by `;`. Do not change the number of columns or column names.
+This table holds the schedule information. Open/edit in a spreadsheet or text editor. Columns are delimited by `;`. Do not change the number of columns, position of columns or column names.
 
 ***date***: Full date for each day in format dd/mm/yyyy. Missing/empty cells are filled down automatically.  
 ***room***: Room number for the course. Missing/empty cells are filled down automatically.  
@@ -39,17 +39,17 @@ This page holds the steps needed to be completed before the course. **Change pro
 **info.Rmd**  
 This page contains practical information related to the course. **Set location and update info if needed**.
 
-**presentation_topic.Rmd**  
+[**presentation_topic.Rmd**]  
 RMarkdown presentation files for various topics. Replace 'topic' with a short name of the topic.  
 
-**lab_topic.Rmd**  
+[**lab_topic.Rmd**]  
 RMarkdown lab files for various topics. Replace 'topic' with a short name of the topic.  
 
 ## Rendering
 
-The website is rendered by running `rmarkdown::render_site()` in the project directory. This generates the HTML files and all other necessary files and moves it into a directory named `docs`. Open `docs/index.html` to start. This is convenient when moving the contents to a GitHub repo as the docs directory can be set as the Github pages.
+The website is rendered by running `rmarkdown::render_site()` in the project directory. This generates the HTML files and all other necessary files and moves them into a directory named **docs**. Open **docs/index.html** to start. The output directory is set to **docs** because this GitHub repo uses the **docs** directory as the Github pages (rendered content) source.
 
-For testing purposes, you can run `rmarkdown::render("lab_topic.Rmd")` on individual Rmd files.
+For testing purposes, you can run `rmarkdown::render("bla.Rmd")` on individual Rmd files. This is a time-saver as the whole website need not be rendered just to preview this one file. 
 
 ---
 

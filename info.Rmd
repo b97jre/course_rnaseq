@@ -21,7 +21,7 @@ output:
 
 ```{r,eval=TRUE,include=FALSE}
 # setting
-# set to 'uppsala' or 'umea'
+# set location to to 'uppsala' or 'umea'
 loc <- "uppsala"
 ```
 
@@ -50,3 +50,9 @@ leaflet(height=450,width=800) %>%
 ```{r,eval=TRUE,echo=FALSE,results="asis",block.title=NULL}
 cat(dfr$description)
 ```
+
+## Contact
+
+If you would like to get in touch with us regarding this course, it's contents, or if you have suggestions to improve it, please contact Johan Reimegård (`johan.reimegard@scilifelab.se`).  
+
+**End of document.**

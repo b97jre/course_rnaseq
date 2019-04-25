@@ -124,6 +124,23 @@ blockquote {
     line-height: 170%;
 }
 
+/* kbd */
+.kbd {
+  padding: 2px 5px;
+  font-family: var(--font-code,"Menlo","Monaco", "Consolas","Liberation Mono", "Courier New", monospace);
+}
+
+/* danger alert text style */
+
+.danger {
+  color: #721c24;
+  display: block;
+  background: #f8d7da;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
 /* div styles --------------------------------------------------------------- */
 
 /** div style for instrauctions **/
@@ -156,26 +173,30 @@ img {
   border-radius: 2px;
 }
 
-.trlogo {
-  position:absolute;
-  height:50px;
-  /*top:2.5em; with code folding*/
-  top:1em;
-  right:0;
-  padding-right:40px;
-  margin-top:7px;
-}
-
-.logo-white {
+.logo-navbar {
   height: 33px;
   margin-top: 0px;
   margin-right: 20px;
 }
 
-.logo-index {
+.logo-one {
   position: relative;
   height: 50px;
-  top: -92px;
+  top: -105px;
+  float: right;
+}
+
+.logo-two {
+  position: relative;
+  height: 50px;
+  top: -146px;
+  float: right;
+}
+
+.logo-three {
+  position: relative;
+  height: 50px;
+  top: -168px;
   float: right;
 }
 

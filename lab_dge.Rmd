@@ -65,7 +65,7 @@ all.equal(colnames(cr),rownames(mr))
 Let's create a boxplot to visualise the distibution of counts.
 
 ```{r}
-boxplot(log10(as.matrix(cr)+1),ylab="Log10 (Read counts)",las=2,
+boxplot(log10(as.matrix(cr)+1),ylab=expression('Log'[10]~'Read counts'),las=2,
         main="Raw data")
 ```
 
@@ -94,7 +94,7 @@ cf <- cr[keepgenes,]
 ```
 
 ```{r}
-boxplot(log10(as.matrix(cf)+1),ylab="Log10 (Read counts)",las=2,
+boxplot(log10(as.matrix(cf)+1),ylab=expression('Log'[10]~'Read counts'),las=2,
         main="Filtered data")
 ```
 
@@ -130,7 +130,7 @@ rownames(mr) <- mr$Sample_ID
 
 ```{r}
 cc <- edgeR::cpm(cf)
-boxplot(log10(as.matrix(cc)+1),ylab="Log10 (Read counts)",las=2,main="CPM")
+boxplot(log10(as.matrix(cc)+1),ylab=expression('Log'[10]~'Read counts'),las=2,main="CPM")
 ```
 
 But, CPM data has some drawbacks. It is not suitable for within-sample comparisons. The total number of reads per sample varies from sample to sample. This also makes it harder to compare one experiment to another. In addition, gene length is not controlled for in this correction. RPKM/FPKM normalisations correct for gene length, but they are not recommended because they are not comparable between samples.
@@ -169,7 +169,7 @@ all.equal(rownames(cf1),g1$ensembl_gene_id)
 ```
 ```{r}
 ct <- tpm(cf1,g1$len)
-boxplot(log10(as.matrix(ct)+1),ylab="Log10 (Read counts)",las=2,main="TPM")
+boxplot(log10(as.matrix(ct)+1),ylab=expression('Log'[10]~'Read counts'),las=2,main="TPM")
 ```
 
 ## DESeq2
@@ -182,7 +182,7 @@ mr$Time <- factor(mr$Time)
 d <- DESeqDataSetFromMatrix(countData=cf,colData=mr,design=~Time)
 d <- DESeq2::estimateSizeFactors(d,type="ratio")
 cd <- counts(d,normalized=TRUE)
-boxplot(log10(as.matrix(cd)+1),ylab="Log10 (Read counts)",las=2,main="DESeq2")
+boxplot(log10(as.matrix(cd)+1),ylab=expression('Log'[10]~'Read counts'),las=2,main="DESeq2")
 ```
 
 ## VST
@@ -197,7 +197,7 @@ d <- DESeq2::estimateSizeFactors(d,type="ratio")
 d <- DESeq2::estimateDispersions(d)
 cv <- as.data.frame(assay(varianceStabilizingTransformation(d,blind=T)),check.names=F)
 write.table(cv,"./data/counts_vst.txt",sep="\t",dec=".",quote=FALSE)
-boxplot(log10(as.matrix(cv)+1),ylab="Log10 (Read counts)",las=2,main="VST")
+boxplot(log10(as.matrix(cv)+1),ylab=expression('Log'[10]~'Read counts'),las=2,main="VST")
 ```
 
 # Exploratory
@@ -280,7 +280,9 @@ mr <- read.csv2("./data/metadata_raw.csv",header=TRUE,stringsAsFactors=F)
 rownames(mr) <- mr$Sample_ID
 ```
 
-The data is converted to a DESeq2 object. The GLM model we use is simple since we only have one variable of interest `~Time`. If we had other covariates to control for, we would add them to the model like so `~var+Time`. The variable of interest appears in the end.
+The data is converted to a DESeq2 object. The GLM model we use is simple since we only have one variable of interest `~Time`. 
+
+If we had other covariates to control for, we would add them to the model like so `~var+Time`. The variable of interest appears in the end. This model means find differentially expressed genes between groups under 'time' variable while controlling for the effect of 'var'. Similarily, batch effects can be controlled by specifying them in the model `~batch+Time`.
 
 ```{r}
 library(DESeq2)
@@ -299,7 +301,7 @@ d <- DESeq2::estimateSizeFactors(d,type="ratio")
 <div class="optional">
 <b>Optional</b>
 
-For those interested in the details of the *median-of-ratios* method, it is described below.
+For those interested in the details of the *median-of-ratios* method, click below.
 
 <p>
 <button class="btn btn-sm btn-primary btn-collapse btn-collapse-optional collapsed type="button" data-toggle="collapse" data-target="#dge-size-factor" aria-expanded="false" aria-controls="dge-size-factor">
@@ -307,6 +309,8 @@ For those interested in the details of the *median-of-ratios* method, it is desc
 </p>
 <div class="collapse" id="dge-size-factor">
 <div class="card card-body">
+
+This is a step-by-step guide to computing normalisation factors (size factors) using the *median-of-ratios* method.
 
 1. The geometric mean is computed across all samples for each gene.
 
@@ -379,11 +383,11 @@ ggplot(data.frame(mean=log10(dm+1),var=log10(dv+1)),
        aes(mean,var))+
   geom_point(alpha=0.2)+
   geom_smooth(method="lm")+
-  labs(x="Log10 Mean counts",y="Log10 Variance")+
+  labs(x=expression('Log'[10]~'Mean counts'),y=expression('Log'[10]~'Variance'))+
   theme_bw()
 ```
 
-We see a mostly linear relationship on the log scale. The blue line denotes a linear fit. Genes that have larger read counts show higher variance. It's hard to say which genes are more variable based on this alone. A measure that controls for this mean-variance relationship is what we need.
+We see a mostly linear relationship on the log scale. The blue line denotes a linear fit. Genes that have larger read counts show higher variance. It's hard to say which genes are more variable based on this alone. Therefore, variance is not a good measure to identify variation in read counts. A measure that controls for this mean-variance relationship is what we need.
 
 Lo and behold, the coefficient of variation (CV). 
 
@@ -395,7 +399,7 @@ ggplot(data.frame(mean=log10(dm+1),var=dc),
        aes(mean,var))+
   geom_point(alpha=0.2)+
   geom_smooth()+
-  labs(x="Log10 Mean counts",y="Coefficient of variation")+
+  labs(x=expression('Log'[10]~'Mean counts'),y="Coefficient of variation")+
   theme_bw()
 ```
 
@@ -422,11 +426,11 @@ ggplot(dx3,aes(x=log10(mean+1),y=cv))+
   geom_point(alpha=0.2)+
   geom_smooth()+
   facet_wrap(~sample.x)+
-  labs(x="Log10 Mean counts",y="Coefficient of variation")+
+  labs(x=expression('Log'[10]~'Mean counts'),y="Coefficient of variation")+
   theme_bw()
 ```
 
-For the sake of completeness, we can also plot the relationship between CV and variance for the same sample groups.
+We find that CV strongly declines with increasing counts. Genes with low counts show higher dispersion. For the sake of completeness, we can also plot the relationship between CV and variance for the same sample groups.
 
 ```{r,fig.height=5,fig.width=5,block.title=TRUE}
 dx1 <- data.frame(t0=apply(cd[,1:3],1,cva),t2=apply(cd[,4:6],1,cva),
@@ -447,10 +451,11 @@ ggplot(dx3,aes(x=log10(var+1),y=cv))+
   geom_point(alpha=0.2)+
   geom_smooth()+
   facet_wrap(~sample.x)+
-  labs(x="Log10 Variance",y="Coefficient of variation")+
+  labs(x=expression('Log'[10]~'Variance'),y="Coefficient of variation")+
   theme_bw()
 ```
 
+</div>
 </div>
 </div>
 
@@ -474,7 +479,7 @@ The black points denote the maximum likelihood dispersion estimate for each gene
 <div class="optional">
 <b>Optional</b>
 
-For some more discussion on dispersion, click below.
+For details on over-dispersion, click below.
 
 <p>
 <button class="btn btn-sm btn-primary btn-collapse btn-collapse-optional collapsed type="button" data-toggle="collapse" data-target="#dge-testing" aria-expanded="false" aria-controls="dge-testing">
@@ -494,12 +499,13 @@ ggplot(data.frame(mean=log10(dm+1),var=log10(dv+1)),
   geom_point(alpha=0.2)+
   geom_smooth(method="lm")+
   geom_smooth(colour="red")+
-  labs(x="Log10 Mean counts",y="Log10 Variance")+
+  labs(x=expression('Log'[10]~'Mean counts'),y="Log10 Variance")+
   theme_bw()
 ```
 
 We can observe that the variance is larger than the mean. This is called overdispersion. Overdispersion is the reason which RNA-Seq data is modelled as negative-binomial distribution rather than poisson distribution. Poisson distribution has a mean = variance relationship, while negative-binomial distribution has a variance > mean relationship.
 
+</div>
 </div>
 </div>
 

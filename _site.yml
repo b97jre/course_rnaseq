@@ -1,9 +1,9 @@
 name: Workshop on RNA-Seq
 favicon: assets/favicon.png
 output_dir: docs
-exclude: ["presentation.Rmd","data","docs","README.md","github"]
+exclude: ["presentation.Rmd","data","docs","README.md","github","to-do.md"]
 navbar:
-  title: Workshop on RNA-Seq
+  title: "<b>NBIS | Workshop on RNA-Seq</b>"
   logo:
     image: "assets/logo-white.svg"
     href: https://nbisweden.github.io/course_rnaseq

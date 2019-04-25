@@ -9,10 +9,10 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Roy Francis | 22-Apr-2019" />
+<meta name="author" content="Lucile Soler | 25-Apr-2019" />
 
 
-<title>Annotation</title>
+<title>Transcriptome annotation</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -430,7 +430,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Workshop on RNA-Seq</a>
+      <a class="navbar-brand" href="index.html"><b>NBIS | Workshop on RNA-Seq</b></a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -481,9 +481,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Annotation</h1>
+<h1 class="title toc-ignore">Transcriptome annotation</h1>
 <h3 class="subtitle">Workshop on RNA-Seq</h3>
-<h4 class="author"><b>Roy Francis</b> | 22-Apr-2019</h4>
+<h4 class="author"><b>Lucile Soler</b> | 25-Apr-2019</h4>
 
 </div>
 
@@ -492,247 +492,196 @@ div.tocify {
 <!-- custom fonts -->
 <p><link href="https://fonts.googleapis.com/css?family=Roboto|Source+Sans+Pro:300,400,600|Ubuntu+Mono&amp;subset=latin-ext" rel="stylesheet"></p>
 <p><br></p>
-<div id="ensembl" class="section level1">
-<h1><span class="header-section-number">1</span> Ensembl</h1>
-<p>In this section, we will download annotation data using R package <strong>biomaRt</strong>. Annotations refer to known features (verified experimentally or predicted) in the genome. Usually, our features of interest in RNA-Seq are genes, their IDs, position in the genome, gene biotype (protein coding, non-coding etc) etc. We will also use the <strong>dplyr</strong> package to pipe data through functions.</p>
+<p class="large danger" ">
+THIS TOPIC NEEDS TO BE REVIEWED
+</p>
+<div id="functional-annotation" class="section level1">
+<h1><span class="header-section-number">1</span> Functional annotation</h1>
+<p>Functional annotation is the process during which we try to put names to faces - what do the transcript that we have assemble do? Basically all existing approaches accomplish this by means of similarity. If a translation product has strong similarity to a protein that has previously been assigned a function, the function in this newly annotated transcript is probably the same. Of course, this thinking is a bit problematic (where do other functional annotations come from…?) and the method will break down the more distant a newly annotated genome is to existing reference data. A complementary strategy is to scan for more limited similarity - specifically to look for the motifs of functionally characterized protein domains. It doesn’t directly tell you what the protein is doing exactly, but it can provide some first indication.</p>
+<p>In this exercise we will use an approach that combines the search for full-sequence similarity by means of ‘Blast’ against large public databases with more targeted characterization of functional elements through the trinotate pipeline<a href="https://github.com/Trinotate/Trinotate.github.io/wiki">trinotate</a>. Trinotate is a suite of tools designed for automatic functional annotation of transcriptomes, particularly de novo assembled transcriptomes, from model or non-model organisms. It uses homology search to known sequence data (BLAST+/SwissProt), protein domain identification (HMMER/PFAM), protein signal peptide and transmembrane domain prediction (signalP/tmHMM).</p>
+<div id="prepare-the-input-data" class="section level2">
+<h2><span class="header-section-number">1.1</span> Prepare the input data</h2>
+<p>For this exercise we will use the Trinity_200.fasta output that is in the folder /assembly_annotation/raw_computes/. It is the first 200 sequences of the Trinity.fasta file that you created (we create this file so the running time will fit this practical).</p>
+<p>Create a new folder for this exercise:</p>
 <div class="block-title-parent">
 <div class="block-title small">
-R
+sh
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(biomaRt)
-<span class="kw">library</span>(dplyr)
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span> ~/RNAseq_assembly_annotation/
+<span class="fu">mkdir</span> RNAseq_annotation
+<span class="bu">cd</span> RNAseq_annotation</code></pre></div>
+</div>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> Trinotate
+<span class="fu">ln</span> -s ~/RNAseq_assembly_annotation/assembly_annotation/raw_computes/Trinity_200.fa</code></pre></div>
+</div>
+<p>One of the first thing to do when one want to annotate a transcriptome with trinotate is is to prepare the database. I prepared it for you as it is taking 50 minutes to run. You will find it there : ~/RNAseq_assembly_annotation/RNAseq_assembly_annotation/assembly_annotation/database/trinotate_database</p>
+<p>If you want to know how to prepare the database, you can look at the following lines (again you do not need to run it) :</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">module</span> load bioinfo-tools
+<span class="ex">module</span> load trinotate
 
-<span class="kw">listMarts</span>()</code></pre></div>
-<pre><code>##                biomart               version
-## 1 ENSEMBL_MART_ENSEMBL      Ensembl Genes 96
-## 2   ENSEMBL_MART_MOUSE      Mouse strains 96
-## 3     ENSEMBL_MART_SNP  Ensembl Variation 96
-## 4 ENSEMBL_MART_FUNCGEN Ensembl Regulation 96</code></pre>
+<span class="ex">/sw/apps/bioinfo/trinotate/3.1.1/rackham/admin/Build_Trinotate_Boilerplate_SQLite_db.pl</span> Trinotate</code></pre></div>
 </div>
-<p>We will use the code below to find the name of the Human ensembl genes dataset under ensembl mart.</p>
+<p>Then there is few step to prepare the protein database for blast searches by:</p>
 <div class="block-title-parent">
 <div class="block-title small">
-R
+sh
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mart &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>)
-ds &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">listDatasets</span>(<span class="dt">mart=</span>mart))
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">makeblastdb</span> -in uniprot_sprot.pep -dbtype prot</code></pre></div>
+</div>
+<p>And uncompress and prepare the Pfam database for use with ‘hmmscan’:</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">gunzip</span> Pfam-A.hmm.gz
+<span class="ex">hmmpress</span> Pfam-A.hmm</code></pre></div>
+</div>
+</div>
+<div id="determining-longest-open-reading-frames-orf" class="section level2">
+<h2><span class="header-section-number">1.2</span> Determining longest Open Reading Frames (ORF)</h2>
+<p>The second step of the annotation of transcript is to determine open reading frame, they will be then annotated. In order to perform this work we use <a href="https://github.com/TransDecoder/TransDecoder/wiki">TransDecoder</a> This tool has proved to be worth particularly within the Trinotate pipeline.</p>
+<p>TransDecoder identifies likely coding sequences based on the following steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>All open reading frames (ORFs) above a minimum length (default: 100 amino acids) are identified across all transcripts. Incomplete ORFs are accepted (no start or/and no stop)</p></li>
+<li><p>The top 500 longest ORFs are selected and a reading frame-specific 5th-order Markov model is trained based on these coding sequences.</p></li>
+<li><p>All previously identified ORFs are scored as a sum of the log odds ratio across the length of the putative coding sequence. This log-likelihood score is similar to what is computed by the GeneID software.</p></li>
+<li><p>In addition to reporting ORFs meeting the score requirements, any ORF found to exceed a minimum length of 300 amino acids is reported.</p></li>
+</ol>
+<p>Running TransDecoder is a two-step process. First run the TransDecoder step that identifies all long ORFs and then the step that predicts which ORFs are likely to be coding.</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">module</span> load bioinfo-tools
 
-<span class="co"># find all rows in dataset &#39;ds&#39; where column &#39;description&#39; contains the string &#39;human&#39;</span>
-ds[<span class="kw">grepl</span>(<span class="st">&quot;human&quot;</span>,<span class="kw">tolower</span>(ds<span class="op">$</span>description)),]</code></pre></div>
-<pre><code>##                  dataset              description    version
-## 73 hsapiens_gene_ensembl Human genes (GRCh38.p12) GRCh38.p12</code></pre>
+<span class="ex">module</span> load trinotate
+<span class="ex">TransDecoder.LongOrfs</span> -t Trinity_200.fa
+<span class="ex">TransDecoder.Predict</span> -t Trinity_200.fa</code></pre></div>
 </div>
-<p>Now that we know the name of the dataset, we can list all the columns (filters) in this dataset.</p>
+<p>Once you have the sequences you can start looking for sequence or domain homologies.</p>
+</div>
+<div id="blast-approach" class="section level2">
+<h2><span class="header-section-number">1.3</span> BLAST approach</h2>
+<p>Blast searches provide an indication about potential homology to known proteins. A ‘full’ Blast analysis can run for several days and consume several GB of Ram. Consequently, for a huge amount of data it is recommended to parallelize this step doing analysis of chunks of tens or hundreds proteins. This approach can be used to give a name to the genes and a function to the transcripts. We will first run a blastx on our transcripts and then a blastp on the proteins we obtained from the transdecoder tool.</p>
+<div id="perform-blast-searches-from-the-command-line-on-uppmax" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> Perform Blast searches from the command line on Uppmax:</h3>
+<p>To run Blast on your data, use the Ncbi Blast+ package against a Drosophila-specific database (included in the folder we have provided for you, under <code>~/RNAseq_assembly_annotation/assembly_annotation/database/uniprot_dmel/uniprot_dmel.fa</code>. Of course, any other NCBI database would also work:</p>
 <div class="block-title-parent">
 <div class="block-title small">
-R
+sh
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mart &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>)
-mart &lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="dt">mart=</span>mart,<span class="dt">dataset=</span><span class="st">&quot;hsapiens_gene_ensembl&quot;</span>)
-la &lt;-<span class="st"> </span><span class="kw">listAttributes</span>(<span class="dt">mart=</span>mart)
-<span class="kw">head</span>(la)</code></pre></div>
-<pre><code>##                            name                  description         page
-## 1               ensembl_gene_id               Gene stable ID feature_page
-## 2       ensembl_gene_id_version       Gene stable ID version feature_page
-## 3         ensembl_transcript_id         Transcript stable ID feature_page
-## 4 ensembl_transcript_id_version Transcript stable ID version feature_page
-## 5            ensembl_peptide_id            Protein stable ID feature_page
-## 6    ensembl_peptide_id_version    Protein stable ID version feature_page</code></pre>
-</div>
-<p>One can also search for attributes of interest.</p>
-<div class="block-title-parent">
-<div class="block-title small">
-R
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">searchAttributes</span>(<span class="dt">mart=</span>mart,<span class="dt">pattern=</span><span class="st">&quot;entrez&quot;</span>)</code></pre></div>
-<pre><code>##                     name                   description         page
-## 55 entrezgene_trans_name EntrezGene transcript name ID feature_page
-## 74            entrezgene                  NCBI gene ID feature_page</code></pre>
-</div>
-<p>We create a vector of our columns of interest.</p>
-<div class="block-title-parent">
-<div class="block-title small">
-R
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myattributes &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;ensembl_gene_id&quot;</span>,
-                  <span class="st">&quot;entrezgene&quot;</span>,
-                  <span class="st">&quot;external_gene_name&quot;</span>,
-                  <span class="st">&quot;chromosome_name&quot;</span>,
-                  <span class="st">&quot;start_position&quot;</span>,
-                  <span class="st">&quot;end_position&quot;</span>,
-                  <span class="st">&quot;strand&quot;</span>,
-                  <span class="st">&quot;gene_biotype&quot;</span>,
-                  <span class="st">&quot;description&quot;</span>)</code></pre></div>
-</div>
-<p>We then use this to download our data. Note that this can be a slow step.</p>
-<div class="block-title-parent">
-<div class="block-title small">
-R
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mart &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>)
-mart &lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="dt">mart=</span>mart,<span class="dt">dataset=</span><span class="st">&quot;hsapiens_gene_ensembl&quot;</span>)
-bdata &lt;-<span class="st"> </span><span class="kw">getBM</span>(<span class="dt">mart=</span>mart,<span class="dt">attributes=</span>myattributes,<span class="dt">uniqueRows=</span>T)
-<span class="kw">head</span>(bdata)</code></pre></div>
-</div>
-<pre><code>  ensembl_gene_id entrezgene external_gene_name chromosome_name start_position
-1 ENSG00000210049         NA              MT-TF              MT            577
-2 ENSG00000211459         NA            MT-RNR1              MT            648
-3 ENSG00000210077         NA              MT-TV              MT           1602
-4 ENSG00000210082         NA            MT-RNR2              MT           1671
-5 ENSG00000209082         NA             MT-TL1              MT           3230
-6 ENSG00000198888       4535             MT-ND1              MT           3307
-  end_position strand   gene_biotype
-1          647      1        Mt_tRNA
-2         1601      1        Mt_rRNA
-3         1670      1        Mt_tRNA
-4         3229      1        Mt_rRNA
-5         3304      1        Mt_tRNA
-6         4262      1 protein_coding
-                                                                                               description
-1                              mitochondrially encoded tRNA-Phe (UUU/C) [Source:HGNC Symbol;Acc:HGNC:7481]
-2                                       mitochondrially encoded 12S RNA [Source:HGNC Symbol;Acc:HGNC:7470]
-3                                mitochondrially encoded tRNA-Val (GUN) [Source:HGNC Symbol;Acc:HGNC:7500]
-4                                       mitochondrially encoded 16S RNA [Source:HGNC Symbol;Acc:HGNC:7471]
-5                            mitochondrially encoded tRNA-Leu (UUA/G) 1 [Source:HGNC Symbol;Acc:HGNC:7490]
-6 mitochondrially encoded NADH:ubiquinone oxidoreductase core subunit 1 [Source:HGNC Symbol;Acc:HGNC:7455]</code></pre>
-<p>We find that there are several duplicates for all the IDs. This needs to be fixed when this information is to be used downstream.</p>
-<div class="block-title-parent">
-<div class="block-title small">
-R
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">duplicated</span>(bdata<span class="op">$</span>ensembl_gene_id))
-<span class="kw">sum</span>(<span class="kw">duplicated</span>(bdata<span class="op">$</span>entrezgene))
-<span class="kw">sum</span>(<span class="kw">duplicated</span>(bdata<span class="op">$</span>external_gene_name))</code></pre></div>
-</div>
-<pre><code>252
-45751
-6417</code></pre>
-<div class="block-title-parent">
-<div class="block-title small">
-R
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># arrange table by chr name and start position</span>
-bdata &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(bdata,chromosome_name,start_position)
-<span class="kw">write.table</span>(bdata,<span class="st">&quot;./data/human_genes.txt&quot;</span>,<span class="dt">row.names=</span>F,<span class="dt">quote=</span>F,<span class="dt">col.names=</span>T,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</code></pre></div>
-</div>
-<p>Similarily, we can get entrez gene ID to GO ID relationships. List all the GO related filters:</p>
-<div class="block-title-parent">
-<div class="block-title small">
-R
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mart &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>)
-mart &lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="dt">mart=</span>mart,<span class="dt">dataset=</span><span class="st">&quot;hsapiens_gene_ensembl&quot;</span>)
-lf &lt;-<span class="st"> </span><span class="kw">listFilters</span>(<span class="dt">mart=</span>mart)
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">blastx</span> -db ~/RNAseq_assembly_annotation/assembly_annotation/database/uniprot_dmel/uniprot_dmel.fa -query Trinity_200.fa -max_target_seqs 1 -outfmt 6 -evalue 1e-5 <span class="op">&gt;</span> swissprot.blastx.outfmt6
 
-<span class="co"># find all rows in dataset &#39;lf&#39; where column &#39;name&#39; contains the string &#39;go&#39;</span>
-lf[<span class="kw">grepl</span>(<span class="st">&quot;go&quot;</span>,<span class="kw">tolower</span>(lf<span class="op">$</span>name)),]</code></pre></div>
+<span class="ex">blastp</span> -db ~/RNAseq_assembly_annotation/assembly_annotation/database/uniprot_dmel/uniprot_dmel.fa -query Trinity_200.fa.transdecoder.pep -max_target_seqs 1 -outfmt 6 -evalue 1e-5 <span class="op">&gt;</span> swissprot.blastp.outfmt6</code></pre></div>
 </div>
-<pre><code>                   name                        description
-1               with_go                      With GO ID(s)
-2       with_goslim_goa              With GOSlim GOA ID(s)
-3                    go         GO ID(s) [e.g. GO:0000002]
-4            goslim_goa GOSlim GOA ID(s) [e.g. GO:0000003]
-5        go_parent_term              Parent term accession
-6        go_parent_name                   Parent term name
-7      go_evidence_code                   GO Evidence code
-8   with_cdingo_homolog            Orthologous Dingo Genes
-9 with_ggorilla_homolog          Orthologous Gorilla Genes</code></pre>
+</div>
+</div>
+<div id="domainprofiles-homology-searches" class="section level2">
+<h2><span class="header-section-number">1.4</span> Domain/profiles homology searches</h2>
+<div id="pfam-database" class="section level3">
+<h3><span class="header-section-number">1.4.1</span> Pfam database</h3>
+<p>Using your predicted protein sequences, we can run a <a href="http://hmmer.org/">HMMER</a> search against the <a href="http://pfam.xfam.org/">Pfam database</a>, and identify conserved domains that might be indicative or suggestive of function:</p>
 <div class="block-title-parent">
 <div class="block-title small">
-R
+sh
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mart &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>)
-mart &lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="dt">mart=</span>mart,<span class="dt">dataset=</span><span class="st">&quot;hsapiens_gene_ensembl&quot;</span>)
-bdata &lt;-<span class="st"> </span><span class="kw">getBM</span>(<span class="dt">mart=</span>mart,<span class="dt">attributes=</span><span class="kw">c</span>(<span class="st">&quot;entrezgene&quot;</span>,<span class="st">&quot;go&quot;</span>,<span class="st">&quot;go_evidence_code&quot;</span>),<span class="dt">uniqueRows=</span>T)
-<span class="kw">write.table</span>(bdata,<span class="st">&quot;./data/go.txt&quot;</span>,<span class="dt">row.names=</span>F,<span class="dt">quote=</span>F,<span class="dt">col.names=</span>T,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">hmmscan</span> --cpu 5 --domtblout TrinotatePFAM.out ~/RNAseq_assembly_annotation/assembly_annotation/database/trinotate_database/Pfam-A.hmm Trinity_200.fa.transdecoder.pep</code></pre></div>
 </div>
-<p>We can also take a quick look at converting IDs. It is often desirable to convert a certain gene identifier to another (ensembl gene ID, entrez gene ID, gene ID). Sometimes, it may be necessary to convert gene IDs of one organism to another. biomaRt has a convenient function for this called <code>getLDS()</code>.</p>
-<p>Here is an example where we convert a few mouse ensembl IDs to Human Hugo gene IDs.</p>
+</div>
+<div id="signal-peptide" class="section level3">
+<h3><span class="header-section-number">1.4.2</span> Signal peptide</h3>
+<p>The <a href="http://www.cbs.dtu.dk/services/SignalP/">signalP tool</a> is very useful for predicting signal peptides (secretion signals).</p>
+<p>To predict signal peptides, run signalP:</p>
 <div class="block-title-parent">
 <div class="block-title small">
-R
+sh
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mouse_genes &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;ENSMUSG00000035847&quot;</span>,<span class="st">&quot;ENSMUSG00000000214&quot;</span>)
-mouse &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ensembl&quot;</span>,<span class="dt">dataset=</span><span class="st">&quot;mmusculus_gene_ensembl&quot;</span>)
-human &lt;-<span class="st"> </span><span class="kw">useMart</span>(<span class="st">&quot;ensembl&quot;</span>,<span class="dt">dataset=</span><span class="st">&quot;hsapiens_gene_ensembl&quot;</span>)
-human_genes &lt;-<span class="st"> </span><span class="kw">getLDS</span>(<span class="dt">attributes=</span><span class="kw">c</span>(<span class="st">&quot;ensembl_gene_id&quot;</span>),<span class="dt">filters=</span><span class="st">&quot;ensembl_gene_id&quot;</span>,<span class="dt">values=</span>mouse_genes,<span class="dt">mart=</span>mouse, <span class="dt">attributesL=</span><span class="kw">c</span>(<span class="st">&quot;hgnc_symbol&quot;</span>),<span class="dt">martL=</span>human,<span class="dt">valuesL=</span><span class="st">&quot;hgnc_symbol&quot;</span>,<span class="dt">uniqueRows=</span>F)[,<span class="dv">1</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">export</span> <span class="va">SNIC_TMP=$SNIC_TMP</span>:~/RNAseq_assembly_annotation/RNAseq_annotation/trinotate
+<span class="ex">signalp</span> -f short -n signalp.out Trinity_200.fa.transdecoder.pep</code></pre></div>
 </div>
-<pre><code>      Gene.stable.ID HGNC.symbol
-1 ENSMUSG00000000214          TH
-2 ENSMUSG00000035847         IDS</code></pre>
 </div>
-<div id="session-info" class="section level1">
-<h1><span class="header-section-number">2</span> Session info</h1>
+<div id="transmembrane-region" class="section level3">
+<h3><span class="header-section-number">1.4.3</span> Transmembrane region</h3>
+<p><a href="http://www.cbs.dtu.dk/~krogh/TMHMM/">Tmhmm</a> software tools is very useful for predicting transmembrane domains. Run TMHMM to predict transmembrane regions:</p>
 <div class="block-title-parent">
 <div class="block-title small">
-Output
+sh
 </div>
-<pre><code>## R version 3.5.2 (2018-12-20)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 18.04.2 LTS
-## 
-## Matrix products: default
-## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
-## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
-## 
-## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
-## 
-## attached base packages:
-## [1] parallel  stats4    stats     datasets  grDevices utils     graphics 
-## [8] methods   base     
-## 
-## other attached packages:
-##  [1] formattable_0.2.0.1         kableExtra_1.1.0           
-##  [3] lubridate_1.7.4             pheatmap_1.0.12            
-##  [5] edgeR_3.24.3                limma_3.38.3               
-##  [7] DESeq2_1.22.2               SummarizedExperiment_1.12.0
-##  [9] DelayedArray_0.8.0          BiocParallel_1.16.6        
-## [11] matrixStats_0.54.0          Biobase_2.42.0             
-## [13] GenomicRanges_1.34.0        GenomeInfoDb_1.18.2        
-## [15] IRanges_2.16.0              S4Vectors_0.20.1           
-## [17] BiocGenerics_0.28.0         biomaRt_2.39.3             
-## [19] ggplot2_3.1.1               dplyr_0.8.0.1              
-## [21] captioner_2.2.3             bookdown_0.9               
-## [23] knitr_1.22                  leaflet_2.0.2              
-## 
-## loaded via a namespace (and not attached):
-##  [1] colorspace_1.4-1       htmlTable_1.13.1       XVector_0.22.0        
-##  [4] base64enc_0.1-3        rstudioapi_0.10        xaringan_0.9          
-##  [7] bit64_0.9-7            AnnotationDbi_1.44.0   xml2_1.2.0            
-## [10] splines_3.5.2          geneplotter_1.60.0     Formula_1.2-3         
-## [13] jsonlite_1.6           annotate_1.60.1        cluster_2.0.7-1       
-## [16] shiny_1.3.1            readr_1.3.1            compiler_3.5.2        
-## [19] httr_1.4.0             backports_1.1.4        assertthat_0.2.1      
-## [22] Matrix_1.2-15          lazyeval_0.2.2         later_0.8.0           
-## [25] acepack_1.4.1          htmltools_0.3.6        prettyunits_1.0.2     
-## [28] tools_3.5.2            gtable_0.3.0           glue_1.3.1            
-## [31] GenomeInfoDbData_1.2.0 Rcpp_1.0.1             nlme_3.1-137          
-## [34] crosstalk_1.0.0        xfun_0.6               stringr_1.4.0         
-## [37] rvest_0.3.3            mime_0.6               XML_3.98-1.19         
-## [40] zlibbioc_1.28.0        scales_1.0.0           hms_0.4.2             
-## [43] promises_1.0.1         RColorBrewer_1.1-2     yaml_2.2.0            
-## [46] curl_3.3               memoise_1.1.0          gridExtra_2.3         
-## [49] rpart_4.1-13           latticeExtra_0.6-28    stringi_1.4.3         
-## [52] RSQLite_2.1.1          genefilter_1.64.0      checkmate_1.9.1       
-## [55] rlang_0.3.4            pkgconfig_2.0.2        bitops_1.0-6          
-## [58] evaluate_0.13          lattice_0.20-38        purrr_0.3.2           
-## [61] htmlwidgets_1.3        labeling_0.3           bit_1.1-14            
-## [64] tidyselect_0.2.5       plyr_1.8.4             magrittr_1.5          
-## [67] R6_2.4.0               Hmisc_4.2-0            DBI_1.0.0             
-## [70] pillar_1.3.1           foreign_0.8-71         withr_2.1.2           
-## [73] mgcv_1.8-26            survival_2.43-3        RCurl_1.95-4.12       
-## [76] nnet_7.3-12            tibble_2.1.1           crayon_1.3.4          
-## [79] rmarkdown_1.12         progress_1.2.0         locfit_1.5-9.1        
-## [82] grid_3.5.2             data.table_1.12.2      blob_1.1.1            
-## [85] digest_0.6.18          webshot_0.5.1          xtable_1.8-3          
-## [88] tidyr_0.8.3            httpuv_1.5.1           munsell_0.5.0         
-## [91] viridisLite_0.3.0</code></pre>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">tmhmm</span> --short <span class="op">&lt;</span> Trinity_200.fa.transdecoder.pep <span class="op">&gt;</span> tmhmm.out</code></pre></div>
+</div>
+</div>
+</div>
+<div id="load-results-into-the-database" class="section level2">
+<h2><span class="header-section-number">1.5</span> Load results into the database</h2>
+<p>To load results of your previous analyses you need to copy the database in your folder (otherwise you will not be able to modify it):</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">cp</span> ~/RNAseq_assembly_annotation/assembly_annotation/database/trinotate_database/Trinotate.sqlite .</code></pre></div>
+</div>
+<p>You also need the transcript sequences (Trinity_200.fa), the protein sequences (Trinity_200.fa.transdecoder.pep) and a file showing gene/Transcript relationships (tab delimited format: “gene_id(tab)transcript_id”). You are using Trinity assemblies, you can generate this file like this:</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">/sw/apps/bioinfo/trinity/2.8.2/rackham/util/support_scripts/get_Trinity_gene_to_trans_map.pl</span> Trinity_200.fa <span class="op">&gt;</span> Trinity_200.fa.gene_trans_map</code></pre></div>
+</div>
+<p>Then you can load those three files into the databases:</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">Trinotate</span> Trinotate.sqlite init --gene_trans_map Trinity_200.fa.gene_trans_map --transcript_fasta Trinity_200.fa --transdecoder_pep Trinity_200.fa.transdecoder.pep</code></pre></div>
+</div>
+<p>Load the blast results :</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">Trinotate</span> Trinotate.sqlite LOAD_swissprot_blastp swissprot.blastp.outfmt6
+<span class="ex">Trinotate</span> Trinotate.sqlite LOAD_swissprot_blastx swissprot.blastx.outfmt6</code></pre></div>
+</div>
+<p>Load the other domains results :</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">Trinotate</span> Trinotate.sqlite LOAD_pfam TrinotatePFAM.out
+<span class="ex">Trinotate</span> Trinotate.sqlite LOAD_tmhmm tmhmm.out
+<span class="ex">Trinotate</span> Trinotate.sqlite LOAD_signalp signalp.out</code></pre></div>
+</div>
+</div>
+<div id="output-and-annotation-report" class="section level2">
+<h2><span class="header-section-number">1.6</span> Output and Annotation Report</h2>
+<p>From the database you can create a report to visualize the results :</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">Trinotate</span> Trinotate.sqlite report <span class="op">&gt;</span> trinotate_annotation_report.xls</code></pre></div>
+</div>
+<p>You can have a look at the parameters if you want to select by evalue or Pfam cutoff.</p>
+<p>The output is a 14 columns tabulated file, you can read more about it <a href="https://github.com/Trinotate/Trinotate.github.io/wiki/Loading-generated-results-into-a-Trinotate-SQLite-Database-and-Looking-the-Output-Annotation-Report">here</a>.</p>
+<p>Have a look at the results, you can retrieve them on your computer to have a better view at it. what do you see? How many transcripts are annotated? What kind of information do you get?</p>
+</div>
+<div id="whats-next" class="section level2">
+<h2><span class="header-section-number">1.7</span> What’s next?</h2>
+<p>You have executed part of the trinotate pipeline step by step but it is now possible to run it as a real pipeline with all the step automated <a href="https://github.com/Trinotate/Trinotate.github.io/wiki/Automated-Execution-of-Trinotate:-Running-computes-and-loading-results">see</a>.</p>
+<p>You can run other analyses with the pipeline such as <a href="https://wiki.gacrc.uga.edu/wiki/RNAmmer">RNAMMER</a> to look for RNA (there was none in this sequence).</p>
+<p>You can also load expression data, expression clusters and some other annotated text into the database created <a href="https://github.com/Trinotate/Trinotate.github.io/wiki/TrinotateWeb">see</a>.</p>
+<p>Finally, you can visualize all those data using the TrinotateWeb tool to visualize the annotation results and differential expression data <a href="https://github.com/Trinotate/Trinotate.github.io/wiki/TrinotateWeb">same link as before</a>.</p>
+<p>One alternative to annotate transcripts or protein is Interproscan. <a href="https://github.com/ebi-pf-team/interproscan/wiki">InterproScan</a> combines a number of searches for conserved motifs and curated data sets of protein clusters etc. This step may take fairly long time. It is recommended to parallelize it for huge amount of data by doing analysis of chunks of tens or hundreds proteins.</p>
+<p>The annotated transcripts can be used in different way in annotation. It can be used to help in the first annotation round to map annotated transcripts to the genome and then help for the genes annotation. It can also be used after the annotation to complement and improve this one if RNAseq data were not available when the genome annotation was done.</p>
+<p><strong>End of document</strong></p>
 </div>
 </div>
 

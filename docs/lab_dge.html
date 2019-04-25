@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Roy Francis | 22-Apr-2019" />
+<meta name="author" content="Roy Francis | 25-Apr-2019" />
 
 
 <title>DGE Workflow</title>
@@ -430,7 +430,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Workshop on RNA-Seq</a>
+      <a class="navbar-brand" href="index.html"><b>NBIS | Workshop on RNA-Seq</b></a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -483,7 +483,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">DGE Workflow</h1>
 <h3 class="subtitle">Workshop on RNA-Seq</h3>
-<h4 class="author"><b>Roy Francis</b> | 22-Apr-2019</h4>
+<h4 class="author"><b>Roy Francis</b> | 25-Apr-2019</h4>
 
 </div>
 
@@ -567,7 +567,7 @@ R
 <div class="block-title small">
 R
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cr)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="st">&quot;Log10 (Read counts)&quot;</span>,<span class="dt">las=</span><span class="dv">2</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cr)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Read counts&#39;</span>),<span class="dt">las=</span><span class="dv">2</span>,
         <span class="dt">main=</span><span class="st">&quot;Raw data&quot;</span>)</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-6-1.svg" width="672" style="display: block; margin: auto auto auto 0;" />
 </div>
@@ -603,7 +603,7 @@ cf &lt;-<span class="st"> </span>cr[keepgenes,]</code></pre></div>
 <div class="block-title small">
 R
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cf)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="st">&quot;Log10 (Read counts)&quot;</span>,<span class="dt">las=</span><span class="dv">2</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cf)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Read counts&#39;</span>),<span class="dt">las=</span><span class="dv">2</span>,
         <span class="dt">main=</span><span class="st">&quot;Filtered data&quot;</span>)</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-10-1.svg" width="672" style="display: block; margin: auto auto auto 0;" />
 </div>
@@ -644,7 +644,7 @@ mr &lt;-<span class="st"> </span><span class="kw">read.csv2</span>(<span class="
 R
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cc &lt;-<span class="st"> </span>edgeR<span class="op">::</span><span class="kw">cpm</span>(cf)
-<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cc)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="st">&quot;Log10 (Read counts)&quot;</span>,<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;CPM&quot;</span>)</code></pre></div>
+<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cc)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Read counts&#39;</span>),<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;CPM&quot;</span>)</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-14-1.svg" width="672" style="display: block; margin: auto auto auto 0;" />
 </div>
 <p>But, CPM data has some drawbacks. It is not suitable for within-sample comparisons. The total number of reads per sample varies from sample to sample. This also makes it harder to compare one experiment to another. In addition, gene length is not controlled for in this correction. RPKM/FPKM normalisations correct for gene length, but they are not recommended because they are not comparable between samples.</p>
@@ -690,7 +690,7 @@ cf1 &lt;-<span class="st"> </span>cf[igenes,]
 R
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ct &lt;-<span class="st"> </span><span class="kw">tpm</span>(cf1,g1<span class="op">$</span>len)
-<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(ct)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="st">&quot;Log10 (Read counts)&quot;</span>,<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;TPM&quot;</span>)</code></pre></div>
+<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(ct)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Read counts&#39;</span>),<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;TPM&quot;</span>)</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-18-1.svg" width="672" style="display: block; margin: auto auto auto 0;" />
 </div>
 </div>
@@ -706,7 +706,7 @@ mr<span class="op">$</span>Time &lt;-<span class="st"> </span><span class="kw">f
 d &lt;-<span class="st"> </span><span class="kw">DESeqDataSetFromMatrix</span>(<span class="dt">countData=</span>cf,<span class="dt">colData=</span>mr,<span class="dt">design=</span><span class="op">~</span>Time)
 d &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">estimateSizeFactors</span>(d,<span class="dt">type=</span><span class="st">&quot;ratio&quot;</span>)
 cd &lt;-<span class="st"> </span><span class="kw">counts</span>(d,<span class="dt">normalized=</span><span class="ot">TRUE</span>)
-<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cd)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="st">&quot;Log10 (Read counts)&quot;</span>,<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;DESeq2&quot;</span>)</code></pre></div>
+<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cd)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Read counts&#39;</span>),<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;DESeq2&quot;</span>)</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-19-1.svg" width="672" style="display: block; margin: auto auto auto 0;" />
 </div>
 </div>
@@ -724,7 +724,7 @@ d &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw"
 d &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">estimateDispersions</span>(d)
 cv &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">assay</span>(<span class="kw">varianceStabilizingTransformation</span>(d,<span class="dt">blind=</span>T)),<span class="dt">check.names=</span>F)
 <span class="kw">write.table</span>(cv,<span class="st">&quot;./data/counts_vst.txt&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>,<span class="dt">dec=</span><span class="st">&quot;.&quot;</span>,<span class="dt">quote=</span><span class="ot">FALSE</span>)
-<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cv)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="st">&quot;Log10 (Read counts)&quot;</span>,<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;VST&quot;</span>)</code></pre></div>
+<span class="kw">boxplot</span>(<span class="kw">log10</span>(<span class="kw">as.matrix</span>(cv)<span class="op">+</span><span class="dv">1</span>),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Read counts&#39;</span>),<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">main=</span><span class="st">&quot;VST&quot;</span>)</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-20-1.svg" width="672" style="display: block; margin: auto auto auto 0;" />
 </div>
 </div>
@@ -753,7 +753,6 @@ R
 <span class="kw">library</span>(pheatmap)
 <span class="kw">pheatmap</span>(dmat,<span class="dt">border_color=</span><span class="ot">NA</span>,<span class="dt">annotation_col=</span>mr[,<span class="st">&quot;Time&quot;</span>,<span class="dt">drop=</span>F],
          <span class="dt">annotation_row=</span>mr[,<span class="st">&quot;Time&quot;</span>,<span class="dt">drop=</span>F],<span class="dt">annotation_legend=</span>T)</code></pre></div>
-<img src="lab_dge_files/figure-html/unnamed-chunk-22-1.svg" width="576" style="display: block; margin: auto auto auto 0;" />
 </div>
 <p>In the matrix, red colour denotes higher correlation (higher similarity) and blue denotes lower correlation (lower similarity). <code>pheatmap()</code> also hierarchically clusters rows and columns based on correlation values. The dendrograms show how samples cluster. Annotation colours denote <strong>Time</strong> groups. Notice that samples group by <strong>Time</strong>.</p>
 </div>
@@ -805,7 +804,6 @@ R
 <span class="kw">library</span>(pheatmap)
 <span class="kw">pheatmap</span>(dmat,<span class="dt">border_color=</span><span class="ot">NA</span>,<span class="dt">annotation_col=</span>mr[,<span class="st">&quot;Time&quot;</span>,<span class="dt">drop=</span>F],
          <span class="dt">annotation_row=</span>mr[,<span class="st">&quot;Time&quot;</span>,<span class="dt">drop=</span>F],<span class="dt">annotation_legend=</span>T)</code></pre></div>
-<img src="lab_dge_files/figure-html/unnamed-chunk-26-1.svg" width="576" style="display: block; margin: auto auto auto 0;" />
 </div>
 <p>Hierarchically clustered sample-to-sample euclidian distance matrix. Larger distances mean lower similarity and vice-versa. In the matrix, red colour denotes larger distance (lower similarity) and blue denotes small distance (higher similarity). Annotation colours denote <strong>Time</strong> groups. The dendrogram helps to visualise sample clustering. Notice that samples group by <strong>Time</strong>.</p>
 </div>
@@ -821,7 +819,8 @@ R
 mr &lt;-<span class="st"> </span><span class="kw">read.csv2</span>(<span class="st">&quot;./data/metadata_raw.csv&quot;</span>,<span class="dt">header=</span><span class="ot">TRUE</span>,<span class="dt">stringsAsFactors=</span>F)
 <span class="kw">rownames</span>(mr) &lt;-<span class="st"> </span>mr<span class="op">$</span>Sample_ID</code></pre></div>
 </div>
-<p>The data is converted to a DESeq2 object. The GLM model we use is simple since we only have one variable of interest <code>~Time</code>. If we had other covariates to control for, we would add them to the model like so <code>~var+Time</code>. The variable of interest appears in the end.</p>
+<p>The data is converted to a DESeq2 object. The GLM model we use is simple since we only have one variable of interest <code>~Time</code>.</p>
+<p>If we had other covariates to control for, we would add them to the model like so <code>~var+Time</code>. The variable of interest appears in the end. This model means find differentially expressed genes between groups under ‘time’ variable while controlling for the effect of ‘var’. Similarily, batch effects can be controlled by specifying them in the model <code>~batch+Time</code>.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 R
@@ -841,13 +840,14 @@ R
 </div>
 <div class="optional">
 <p><b>Optional</b></p>
-<p>For those interested in the details of the <em>median-of-ratios</em> method, it is described below.</p>
+<p>For those interested in the details of the <em>median-of-ratios</em> method, click below.</p>
 <p>
 <button class="btn btn-sm btn-primary btn-collapse btn-collapse-optional collapsed type=" button" data-toggle="collapse" data-target="#dge-size-factor" aria-expanded="false" aria-controls="dge-size-factor">
 </button>
 </p>
 <div id="dge-size-factor" class="collapse">
 <div class="card card-body">
+<p>This is a step-by-step guide to computing normalisation factors (size factors) using the <em>median-of-ratios</em> method.</p>
 <ol style="list-style-type: decimal">
 <li>The geometric mean is computed across all samples for each gene.</li>
 </ol>
@@ -961,11 +961,11 @@ dv &lt;-<span class="st"> </span><span class="kw">apply</span>(cd,<span class="d
        <span class="kw">aes</span>(mean,var))<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha=</span><span class="fl">0.2</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&quot;lm&quot;</span>)<span class="op">+</span>
-<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Log10 Mean counts&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Log10 Variance&quot;</span>)<span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Mean counts&#39;</span>),<span class="dt">y=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Variance&#39;</span>))<span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-35-1.svg" width="432" style="display: block; margin: auto auto auto 0;" />
 </div>
-<p>We see a mostly linear relationship on the log scale. The blue line denotes a linear fit. Genes that have larger read counts show higher variance. It’s hard to say which genes are more variable based on this alone. A measure that controls for this mean-variance relationship is what we need.</p>
+<p>We see a mostly linear relationship on the log scale. The blue line denotes a linear fit. Genes that have larger read counts show higher variance. It’s hard to say which genes are more variable based on this alone. Therefore, variance is not a good measure to identify variation in read counts. A measure that controls for this mean-variance relationship is what we need.</p>
 <p>Lo and behold, the coefficient of variation (CV).</p>
 <div class="block-title-parent">
 <div class="block-title small">
@@ -978,7 +978,7 @@ dc &lt;-<span class="st"> </span><span class="kw">apply</span>(cd,<span class="d
        <span class="kw">aes</span>(mean,var))<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha=</span><span class="fl">0.2</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>()<span class="op">+</span>
-<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Log10 Mean counts&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Coefficient of variation&quot;</span>)<span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Mean counts&#39;</span>),<span class="dt">y=</span><span class="st">&quot;Coefficient of variation&quot;</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-36-1.svg" width="432" style="display: block; margin: auto auto auto 0;" />
 </div>
@@ -1006,11 +1006,11 @@ dx3 &lt;-<span class="st"> </span><span class="kw">merge</span>(dx1,dx2,<span cl
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha=</span><span class="fl">0.2</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>()<span class="op">+</span>
 <span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>sample.x)<span class="op">+</span>
-<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Log10 Mean counts&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Coefficient of variation&quot;</span>)<span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Mean counts&#39;</span>),<span class="dt">y=</span><span class="st">&quot;Coefficient of variation&quot;</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-37-1.svg" width="480" style="display: block; margin: auto auto auto 0;" />
 </div>
-<p>For the sake of completeness, we can also plot the relationship between CV and variance for the same sample groups.</p>
+<p>We find that CV strongly declines with increasing counts. Genes with low counts show higher dispersion. For the sake of completeness, we can also plot the relationship between CV and variance for the same sample groups.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 R
@@ -1033,9 +1033,10 @@ dx3 &lt;-<span class="st"> </span><span class="kw">merge</span>(dx1,dx2,<span cl
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha=</span><span class="fl">0.2</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>()<span class="op">+</span>
 <span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>sample.x)<span class="op">+</span>
-<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Log10 Variance&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Coefficient of variation&quot;</span>)<span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Variance&#39;</span>),<span class="dt">y=</span><span class="st">&quot;Coefficient of variation&quot;</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-38-1.svg" width="480" style="display: block; margin: auto auto auto 0;" />
+</div>
 </div>
 </div>
 </div>
@@ -1057,7 +1058,7 @@ R
 <h2><span class="header-section-number">4.3</span> Testing</h2>
 <div class="optional">
 <p><b>Optional</b></p>
-<p>For some more discussion on dispersion, click below.</p>
+<p>For details on over-dispersion, click below.</p>
 <p>
 <button class="btn btn-sm btn-primary btn-collapse btn-collapse-optional collapsed type=" button" data-toggle="collapse" data-target="#dge-testing" aria-expanded="false" aria-controls="dge-testing">
 </button>
@@ -1077,11 +1078,12 @@ dv &lt;-<span class="st"> </span><span class="kw">apply</span>(cd,<span class="d
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha=</span><span class="fl">0.2</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&quot;lm&quot;</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">colour=</span><span class="st">&quot;red&quot;</span>)<span class="op">+</span>
-<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Log10 Mean counts&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Log10 Variance&quot;</span>)<span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="kw">expression</span>(<span class="st">&#39;Log&#39;</span>[<span class="dv">10</span>]<span class="op">~</span><span class="st">&#39;Mean counts&#39;</span>),<span class="dt">y=</span><span class="st">&quot;Log10 Variance&quot;</span>)<span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
 <img src="lab_dge_files/figure-html/unnamed-chunk-40-1.svg" width="432" style="display: block; margin: auto auto auto 0;" />
 </div>
 <p>We can observe that the variance is larger than the mean. This is called overdispersion. Overdispersion is the reason which RNA-Seq data is modelled as negative-binomial distribution rather than poisson distribution. Poisson distribution has a mean = variance relationship, while negative-binomial distribution has a variance &gt; mean relationship.</p>
+</div>
 </div>
 </div>
 <p>The last step in the DESeq2 workflow is fitting the Negative Binomial model for each gene and performing differential expression testing. This is based on the log fold change values computed on the corrected count estimates between groups.</p>
@@ -1255,17 +1257,17 @@ Output
 ## 
 ## other attached packages:
 ##  [1] formattable_0.2.0.1         kableExtra_1.1.0           
-##  [3] lubridate_1.7.4             pheatmap_1.0.12            
-##  [5] edgeR_3.24.3                limma_3.38.3               
-##  [7] DESeq2_1.22.2               SummarizedExperiment_1.12.0
-##  [9] DelayedArray_0.8.0          BiocParallel_1.16.6        
-## [11] matrixStats_0.54.0          Biobase_2.42.0             
-## [13] GenomicRanges_1.34.0        GenomeInfoDb_1.18.2        
-## [15] IRanges_2.16.0              S4Vectors_0.20.1           
-## [17] BiocGenerics_0.28.0         biomaRt_2.39.3             
-## [19] ggplot2_3.1.1               dplyr_0.8.0.1              
-## [21] captioner_2.2.3             bookdown_0.9               
-## [23] knitr_1.22                  leaflet_2.0.2              
+##  [3] lubridate_1.7.4             leaflet_2.0.2              
+##  [5] pheatmap_1.0.12             edgeR_3.24.3               
+##  [7] limma_3.38.3                DESeq2_1.22.2              
+##  [9] SummarizedExperiment_1.12.0 DelayedArray_0.8.0         
+## [11] BiocParallel_1.16.6         matrixStats_0.54.0         
+## [13] Biobase_2.42.0              GenomicRanges_1.34.0       
+## [15] GenomeInfoDb_1.18.2         IRanges_2.16.0             
+## [17] S4Vectors_0.20.1            BiocGenerics_0.28.0        
+## [19] biomaRt_2.39.3              ggplot2_3.1.1              
+## [21] dplyr_0.8.0.1               captioner_2.2.3            
+## [23] bookdown_0.9                knitr_1.22                 
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] colorspace_1.4-1       htmlTable_1.13.1       XVector_0.22.0        
@@ -1273,7 +1275,7 @@ Output
 ##  [7] bit64_0.9-7            AnnotationDbi_1.44.0   xml2_1.2.0            
 ## [10] splines_3.5.2          geneplotter_1.60.0     Formula_1.2-3         
 ## [13] jsonlite_1.6           annotate_1.60.1        cluster_2.0.7-1       
-## [16] shiny_1.3.1            readr_1.3.1            compiler_3.5.2        
+## [16] shiny_1.3.2            readr_1.3.1            compiler_3.5.2        
 ## [19] httr_1.4.0             backports_1.1.4        assertthat_0.2.1      
 ## [22] Matrix_1.2-15          lazyeval_0.2.2         later_0.8.0           
 ## [25] acepack_1.4.1          htmltools_0.3.6        prettyunits_1.0.2     
