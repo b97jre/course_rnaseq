@@ -1,9 +1,0 @@
-{
-	"n_targets": 210085,
-	"n_bootstraps": 100,
-	"n_processed": 11698105,
-	"kallisto_version": "0.42.4",
-	"index_version": 10,
-	"start_time": "Tue Apr 12 21:07:17 2016",
-	"call": "kallisto quant -i hsGRCh38_kallisto -t 4 -b 100 -o sample6 7_111116_AD0341ACXX_137_6_index6_1.fastq.gz 7_111116_AD0341ACXX_137_6_index6_2.fastq.gz"
-}
