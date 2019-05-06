@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Johan Reimegård | 25-Apr-2019" />
+<meta name="author" content="Johan Reimegård | 06-May-2019" />
 
 
 <title>Kallisto &amp; Sleuth</title>
@@ -483,7 +483,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Kallisto &amp; Sleuth</h1>
 <h3 class="subtitle">Workshop on RNA-Seq</h3>
-<h4 class="author"><b>Johan Reimegård</b> | 25-Apr-2019</h4>
+<h4 class="author"><b>Johan Reimegård</b> | 06-May-2019</h4>
 
 </div>
 
@@ -659,8 +659,153 @@ R
 </div>
 <p>There are lots of things to look at here - explore according to your interests! Some things you might try are e.g. the PCA and sample heatmap options in the map menu, the test table in the analyses menu (which contains a ranked list of the differentially expressed genes), or the gene view in the same menu.</p>
 <p>If you want to delve further into time series analysis with Sleuth (after all, we have just compared two time points here, whereas we have four in all), you might want to read this <a href="http://www.nxn.se/valent/timecourse-analysis-with-sleuth">excellent blog post</a> by Valentine Svensson. Note that Sleuth is still under development, so some of the commands may be a bit different.</p>
-<p><strong>End of document.</strong></p>
 </div>
+</div>
+<div id="session-info" class="section level1">
+<h1><span class="header-section-number">3</span> Session info</h1>
+<div class="block-title-parent">
+<div class="block-title small">
+Output
+</div>
+<pre><code>## R version 3.5.2 (2018-12-20)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.2 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+## 
+## locale:
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats4    parallel  stats     datasets  grDevices utils     graphics 
+## [8] methods   base     
+## 
+## other attached packages:
+##  [1] formattable_0.2.0.1                                
+##  [2] kableExtra_1.1.0                                   
+##  [3] lubridate_1.7.4                                    
+##  [4] edgeR_3.24.3                                       
+##  [5] limma_3.38.3                                       
+##  [6] leaflet_2.0.2                                      
+##  [7] biomaRt_2.39.3                                     
+##  [8] pvclust_2.0-0                                      
+##  [9] DESeq2_1.22.2                                      
+## [10] rafalib_1.0.0                                      
+## [11] pheatmap_1.0.12                                    
+## [12] pvca_1.22.0                                        
+## [13] DelayedMatrixStats_1.4.0                           
+## [14] ggpubr_0.2                                         
+## [15] magrittr_1.5                                       
+## [16] plotly_4.9.0                                       
+## [17] highcharter_0.7.0                                  
+## [18] dplyr_0.8.0.1                                      
+## [19] tidyr_0.8.3                                        
+## [20] stringr_1.4.0                                      
+## [21] ggplot2_3.1.1                                      
+## [22] extrafont_0.17                                     
+## [23] captioner_2.2.3                                    
+## [24] bookdown_0.9                                       
+## [25] knitr_1.22                                         
+## [26] IlluminaHumanMethylationEPICanno.ilm10b2.hg19_0.6.0
+## [27] minfi_1.28.4                                       
+## [28] bumphunter_1.24.5                                  
+## [29] locfit_1.5-9.1                                     
+## [30] iterators_1.0.10                                   
+## [31] foreach_1.4.4                                      
+## [32] Biostrings_2.50.2                                  
+## [33] XVector_0.22.0                                     
+## [34] SummarizedExperiment_1.12.0                        
+## [35] DelayedArray_0.8.0                                 
+## [36] BiocParallel_1.16.6                                
+## [37] matrixStats_0.54.0                                 
+## [38] Biobase_2.42.0                                     
+## [39] GenomicRanges_1.34.0                               
+## [40] GenomeInfoDb_1.18.2                                
+## [41] IRanges_2.16.0                                     
+## [42] S4Vectors_0.20.1                                   
+## [43] BiocGenerics_0.28.0                                
+## 
+## loaded via a namespace (and not attached):
+##   [1] utf8_1.1.4               tidyselect_0.2.5        
+##   [3] lme4_1.1-21              RSQLite_2.1.1           
+##   [5] AnnotationDbi_1.44.0     htmlwidgets_1.3         
+##   [7] grid_3.5.2               munsell_0.5.0           
+##   [9] codetools_0.2-15         preprocessCore_1.44.0   
+##  [11] withr_2.1.2              colorspace_1.4-1        
+##  [13] highr_0.8                rstudioapi_0.10         
+##  [15] xaringan_0.9             Rttf2pt1_1.3.7          
+##  [17] TTR_0.23-4               labeling_0.3            
+##  [19] GenomeInfoDbData_1.2.0   bit64_0.9-7             
+##  [21] rhdf5_2.26.2             generics_0.0.2          
+##  [23] xfun_0.6                 rlist_0.4.6.1           
+##  [25] R6_2.4.0                 illuminaio_0.24.0       
+##  [27] bitops_1.0-6             reshape_0.8.8           
+##  [29] assertthat_0.2.1         promises_1.0.1          
+##  [31] scales_1.0.0             nnet_7.3-12             
+##  [33] gtable_0.3.0             affy_1.60.0             
+##  [35] rlang_0.3.4              genefilter_1.64.0       
+##  [37] splines_3.5.2            rtracklayer_1.42.2      
+##  [39] extrafontdb_1.0          lazyeval_0.2.2          
+##  [41] acepack_1.4.1            GEOquery_2.50.5         
+##  [43] broom_0.5.2              checkmate_1.9.1         
+##  [45] BiocManager_1.30.4       yaml_2.2.0              
+##  [47] reshape2_1.4.3           crosstalk_1.0.0         
+##  [49] GenomicFeatures_1.34.8   backports_1.1.4         
+##  [51] httpuv_1.5.1             quantmod_0.4-14         
+##  [53] Hmisc_4.2-0              tools_3.5.2             
+##  [55] nor1mix_1.2-3            affyio_1.52.0           
+##  [57] RColorBrewer_1.1-2       siggenes_1.56.0         
+##  [59] Rcpp_1.0.1               plyr_1.8.4              
+##  [61] base64enc_0.1-3          progress_1.2.0          
+##  [63] zlibbioc_1.28.0          purrr_0.3.2             
+##  [65] RCurl_1.95-4.12          prettyunits_1.0.2       
+##  [67] rpart_4.1-13             openssl_1.3             
+##  [69] zoo_1.8-5                cluster_2.0.7-1         
+##  [71] data.table_1.12.2        whisker_0.3-2           
+##  [73] mime_0.6                 hms_0.4.2               
+##  [75] evaluate_0.13            xtable_1.8-3            
+##  [77] XML_3.98-1.19            mclust_5.4.3            
+##  [79] readxl_1.3.1             gridExtra_2.3           
+##  [81] compiler_3.5.2           tibble_2.1.1            
+##  [83] writexl_1.1              crayon_1.3.4            
+##  [85] minqa_1.2.4              htmltools_0.3.6         
+##  [87] mgcv_1.8-26              later_0.8.0             
+##  [89] Formula_1.2-3            geneplotter_1.60.0      
+##  [91] DBI_1.0.0                MASS_7.3-51.1           
+##  [93] boot_1.3-20              Matrix_1.2-15           
+##  [95] readr_1.3.1              cli_1.1.0               
+##  [97] vsn_3.50.0               quadprog_1.5-5          
+##  [99] igraph_1.2.4             pkgconfig_2.0.2         
+## [101] GenomicAlignments_1.18.1 registry_0.5-1          
+## [103] foreign_0.8-71           xml2_1.2.0              
+## [105] annotate_1.60.1          rngtools_1.3.1          
+## [107] webshot_0.5.1            pkgmaker_0.27           
+## [109] multtest_2.38.0          beanplot_1.2            
+## [111] rvest_0.3.3              bibtex_0.4.2            
+## [113] doRNG_1.7.1              digest_0.6.18           
+## [115] rmarkdown_1.12           base64_2.0              
+## [117] cellranger_1.1.0         htmlTable_1.13.1        
+## [119] curl_3.3                 shiny_1.3.2             
+## [121] Rsamtools_1.34.1         nloptr_1.2.1            
+## [123] nlme_3.1-137             jsonlite_1.6            
+## [125] Rhdf5lib_1.4.3           viridisLite_0.3.0       
+## [127] askpass_1.1              fansi_0.4.0             
+## [129] pillar_1.3.1             lattice_0.20-38         
+## [131] GGally_1.4.0             httr_1.4.0              
+## [133] survival_2.43-3          glue_1.3.1              
+## [135] xts_0.11-2               bit_1.1-14              
+## [137] stringi_1.4.3            HDF5Array_1.10.1        
+## [139] blob_1.1.1               latticeExtra_0.6-28     
+## [141] memoise_1.1.0</code></pre>
+</div>
+<p><strong>End of document.</strong></p>
 </div>
 
 

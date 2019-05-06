@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Johan Reimegård | 25-Apr-2019" />
+<meta name="author" content="Johan Reimegård | 06-May-2019" />
 
 
 <title>RNA-Seq assembly</title>
@@ -483,7 +483,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">RNA-Seq assembly</h1>
 <h3 class="subtitle">Workshop on RNA-Seq</h3>
-<h4 class="author"><b>Johan Reimegård</b> | 25-Apr-2019</h4>
+<h4 class="author"><b>Johan Reimegård</b> | 06-May-2019</h4>
 
 </div>
 
@@ -497,17 +497,25 @@ THIS TOPIC NEEDS TO BE REVIEWED
 </p>
 <div id="preparation" class="section level1">
 <h1><span class="header-section-number">1</span> Preparation</h1>
-<p>This exercise is meant to get you acquainted with the type of data you would normally encounter in an assembly/annotation project. We will for all exercises use data for the fruit fly, Drosophila melanogaster, as that is one of the currently best annotated organisms and there is plenty of high quality data available.</p>
-<p>You can create the folders where you want but I would suggest a folder organisation, if you do not follow this organisation remmember to put the correct path to your data</p>
+<p>This exercise is meant to get you acquainted with the type of data you would normally encounter in an assembly/annotation project. We will for all exercises use data for the fruit fly (<em>Drosophila melanogaster</em>), as that is one of the currently best annotated organisms and there is plenty of high quality data available.</p>
+<p>You can create the folders where you want but I would suggest a folder organisation, if you do not follow this organisation remember to put the correct path to your data.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span>
-<span class="fu">mkdir</span> assembly
-<span class="bu">cd</span> assembly</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> bonus/assembly
+<span class="bu">cd</span> bonus/assembly</code></pre></div>
 </div>
-<p>We will clone this Github repo from NBIS annotation team which will be used during this pratical.</p>
+<p>Let’s link the raw fastq files.</p>
+<div class="block-title-parent">
+<div class="block-title small">
+sh
+</div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> raw
+<span class="bu">cd</span> raw
+<span class="fu">ln</span> -s /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/raw_computes/* .</code></pre></div>
+</div>
+<p>We will clone this Github repo from NBIS annotation team which will be used during this practical.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
@@ -534,24 +542,22 @@ sh
 <span class="ex">module</span> load FastQC/0.11.5
 
 <span class="fu">mkdir</span> fastqc
-
-<span class="ex">fastqc</span> ~/assembly/assembly_annotation/raw_computes/ERR305399_1.fastq.gz -o fastqc/</code></pre></div>
+<span class="ex">fastqc</span> ./raw/ERR305399_1.fastq.gz -o fastqc/</code></pre></div>
 </div>
 <p>Copy the FastQC report HTML file to your system and inspect the results. You can use <code>SCP</code> to copy the file. Run the command below from a <strong>LOCAL</strong> terminal.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">scp</span> user@rackham.uppmax.uu.se:/home/user/RNAseq_annotation/report.html .</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">scp</span> user@rackham.uppmax.uu.se:[path-to-report.html] .</code></pre></div>
 </div>
 <p>Next, we check the fastq quality score format. For this, we will be using the scripts libraries available in the git gaas you need first to export the libraries and run the script <code>fastq_guessMyFormat.pl</code>.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">export</span> <span class="va">PERL5LIB=$PERL5LIB</span>:~/assembly/GAAS/annotation/
-
-<span class="ex">~/assembly/GAAS/annotation/Tools/bin/fastq_guessMyFormat.pl</span> -i ~/assembly/assembly_annotation/raw_computes/ERR305399_1.fastq.gz</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">export</span> <span class="va">PERL5LIB=$PERL5LIB</span>:./GAAS/annotation/
+<span class="ex">./GAAS/annotation/Tools/bin/fastq_guessMyFormat.pl</span> -i ./raw/ERR305399_1.fastq.gz</code></pre></div>
 </div>
 <p>In the normal mode, it differentiates between Sanger/Illumina1.8+ and Solexa/Illumina1.3+/Illumina1.5+. In the advanced mode, it will try to pinpoint exactly which scoring system is used.</p>
 <p>More test can be made and should be made on RNA-seq data before doing the assembly, we have not time to do all of them during this course. have a look <a href="https://en.wikipedia.org/wiki/List_of_RNA-Seq_bioinformatics_tools">here</a></p>
@@ -560,7 +566,7 @@ sh
 </div>
 <div id="guided-assembly" class="section level1">
 <h1><span class="header-section-number">2</span> Guided assembly</h1>
-<p>In this section, we run a genome-guided transcriptome assembly. We use Trimmomatic to trim the reads, HISAT2 to map reads to reference genome and Stringtie to assemble reads into transcripts.</p>
+<p>In this section, we run a genome-guided transcriptome assembly. We use Trimmomatic to trim the reads, HISAT2 to map reads to reference genome and StringTie to assemble reads into transcripts.</p>
 <div id="trimmomatic" class="section level2">
 <h2><span class="header-section-number">2.1</span> Trimmomatic</h2>
 <p><a href="http://www.usadellab.org/cms/?page=trimmomatic">Trimmomatic</a> performs a variety of useful trimming tasks for illumina paired-end and single ended data.The selection of trimming steps and their associated parameters are supplied on the command line.</p>
@@ -577,7 +583,7 @@ sh
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">java</span> -jar /sw/apps/bioinfo/trimmomatic/0.36/milou/trimmomatic-0.36.jar PE -threads 5 -phred33 ~/assembly/assembly_annotation/raw_computes/ERR305399_1.fastq.gz ~/assembly/assembly_annotation/raw_computes/ERR305399_2.fastq.gz trimmomatic/ERR305399.left_paired.fastq.gz trimmomatic/ERR305399.left_unpaired.fastq.gz trimmomatic/ERR305399.right_paired.fastq.gz trimmomatic/ERR305399.right_unpaired.fastq.gz ILLUMINACLIP:/sw/apps/bioinfo/trimmomatic/0.36/milou/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">java</span> -jar /sw/apps/bioinfo/trimmomatic/0.36/milou/trimmomatic-0.36.jar PE -threads 5 -phred33 ./raw/ERR305399_1.fastq.gz ./raw/ERR305399_2.fastq.gz trimmomatic/ERR305399.left_paired.fastq.gz trimmomatic/ERR305399.left_unpaired.fastq.gz trimmomatic/ERR305399.right_paired.fastq.gz trimmomatic/ERR305399.right_unpaired.fastq.gz ILLUMINACLIP:/sw/apps/bioinfo/trimmomatic/0.36/milou/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36</code></pre></div>
 </div>
 </div>
 <div id="hisat2" class="section level2">
@@ -592,7 +598,7 @@ sh
 
 <span class="ex">module</span> load HISAT2
 <span class="ex">module</span> load samtools/1.8
-<span class="ex">hisat2-build</span> ~/assembly/assembly_annotation/chromosome/chr4.fa index/chr4_index</code></pre></div>
+<span class="ex">hisat2-build</span> /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/chromosome/chr4.fa ./index/chr4_index</code></pre></div>
 </div>
 <p>Then you can run HISAT2 : * <code>--phred33</code> Input qualities are ASCII chars equal to the Phred quality plus 33. This is also called the “Phred+33” encoding, which is used by the very latest Illumina pipelines (you checked it with the script <em>fastq_guessMyFormat.pl</em>)<br />
 * <code>--rna-strandness &lt;string&gt;</code> For single-end reads, use <strong>F</strong> or <strong>R</strong>. <strong>F</strong> means a read corresponds to a transcript. <strong>R</strong> means a read corresponds to the reverse complemented counterpart of a transcript. For paired-end reads, use either <strong>FR</strong> or <strong>RF</strong>. (<strong>RF</strong> means fr-firststrand see <a href="https://github.com/NBISweden/GAAS/blob/master/annotation/CheatSheet/rnaseq_library_types.md">here</a> for more explanation).<br />
@@ -624,16 +630,16 @@ sh
 
 <span class="ex">stringtie</span> hisat2/accepted_hits.sorted.bam -o stringtie/transcripts.gtf</code></pre></div>
 </div>
-<p>When done you can find your results in the directory ‘outdir’. The file transcripts.gtf includes your assembled transcripts.</p>
+<p>When done you can find your results in the directory <strong>outdir</strong>. The file <code>transcripts.gtf</code> includes your assembled transcripts.</p>
 <p>You could now also visualise all this information using a genome browser, such as IGV. IGV requires a genome fasta file and any number of annotation files in GTF or GFF3 format (note that GFF3 formatted file tend to look a bit weird in IGV sometimes).</p>
-<p>Transfer the gtf files to your computer using scp:</p>
+<p>Transfer the GTF files to your computer using SCP:</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">scp</span> __YOURLOGIN__@rackham.uppmax.uu.se:/home/__YOURLOGIN__/assembly/RNAseq_assembly/stringtie/transcripts.gtf .</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">scp</span> user@rackham.uppmax.uu.se:[path-to-transcripts.gtf] .</code></pre></div>
 </div>
-<p>Looking at your results, are you happy with the default values of Stringtie (which we used in this exercise) or is there something you would like to change?</p>
+<p><i class="fas fa-comments"></i> Looking at your results, are you happy with the default values of StringTie (which we used in this exercise) or is there something you would like to change?</p>
 </div>
 </div>
 <div id="de-novo-assembly" class="section level1">
@@ -647,10 +653,10 @@ sh
 <span class="ex">module</span> load trinity/2.4.0
 <span class="ex">module</span> load samtools
 
-<span class="ex">Trinity</span> --seqType fq --max_memory 32G --left ~/assembly/assembly_annotation/raw_computes/ERR305399_1.fastq.gz --right ~/assembly/assembly_annotation/raw_computes/ERR305399_2.fastq.gz --CPU 5 --output trinity --SS_lib_type RF</code></pre></div>
+<span class="ex">Trinity</span> --seqType fq --max_memory 32G --left ./raw/ERR305399_1.fastq.gz --right ./raw/ERR305399_2.fastq.gz --CPU 5 --output trinity --SS_lib_type RF</code></pre></div>
 </div>
-<p>Trinity takes a long time to run (like hours), you can stop the program when you start it and have a look at the results, look in ~/assembly/assembly_annotation/RNAseq/trinity the output is Trinity.fasta</p>
-<p>In order to compare the output of stringtie and the output of trinity we need to map the trinity transcript to the chr4 of Drosophila.</p>
+<p>Trinity takes a long time to run (like hours), you can stop the program when you start it and have a look at the results, look in <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/RNAseq/trinity</code> and the output is <code>Trinity.fasta</code>.</p>
+<p>In order to compare the output of StringTie and the output of Trinity we need to map the Trinity transcript to the chr4 of Drosophila.</p>
 <p>We’ll use the GMAP software to align the Trinity transcripts to our reference genome. Trinity contains a utility that facilitates running GMAP, which first builds an index for the target genome followed by running the gmap aligner:</p>
 <div class="block-title-parent">
 <div class="block-title small">
@@ -660,32 +666,31 @@ sh
 
 <span class="fu">mkdir</span> gmap
 
-<span class="ex">/sw/apps/bioinfo/trinity/2.4.0/rackham/util/misc/process_GMAP_alignments_gff3_chimeras_ok.pl</span> --genome ~/assembly/assembly_annotation/chromosome/chr4.fa --transcripts ~/assembly/assembly_annotation/RNAseq/trinity/Trinity.fasta <span class="op">&gt;</span> gmap/transcript_trinity.gff</code></pre></div>
+<span class="ex">/sw/apps/bioinfo/trinity/2.4.0/rackham/util/misc/process_GMAP_alignments_gff3_chimeras_ok.pl</span> --genome /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/chromosome/chr4.fa --transcripts /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/RNAseq/trinity/Trinity.fasta <span class="op">&gt;</span> gmap/transcript_trinity.gff</code></pre></div>
 </div>
 <div id="assembly-quality" class="section level2">
 <h2><span class="header-section-number">3.1</span> Assembly quality</h2>
 <p>There are different ways of assessing the quality of your assembly, you will find some of them <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki/Transcriptome-Assembly-Quality-Assessment">here</a>.</p>
 <p>We will run BUSCO to check the the quality of the assembly. <a href="https://busco.ezlab.org/">BUSCO</a> provides measures for quantitative assessment of genome assembly, gene set, and transcriptome completeness (what we are going to do here). Genes that make up the BUSCO sets for each major lineage are selected from orthologous groups with genes present as single-copy orthologs in at least 90% of the species in the chosen branch of tree of life.</p>
-<p>For the trinity results :</p>
+<p>For the Trinity results :</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
 <div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">module</span> load BUSCO/3.0.2b
 
-<span class="ex">/sw/apps/bioinfo/BUSCO/3.0.2b/rackham/bin/run_BUSCO.py</span> -i ~/assembly/assembly_annotation/RNAseq/trinity/Trinity.fasta -o busco_trinity -l <span class="va">$BUSCO_LINEAGE_SETS</span>/arthropoda_odb9 -m tran -c 5</code></pre></div>
+<span class="ex">/sw/apps/bioinfo/BUSCO/3.0.2b/rackham/bin/run_BUSCO.py</span> -i /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/RNAseq/trinity/Trinity.fasta -o busco_trinity -l <span class="va">$BUSCO_LINEAGE_SETS</span>/arthropoda_odb9 -m tran -c 5</code></pre></div>
 </div>
-<p>Busco will take 30 to run so you can check the results in <code>~/assembly/assembly_annotation/RNAseq/busco_trinity</code></p>
-<p>For the guided assembly results</p>
-<p>You need first to extract the transcript sequences from the gtf transcript file :</p>
+<p>Busco will take 30 to run so you can check the results in <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/RNAseq/busco_trinity</code></p>
+<p>For the guided assembly results, you need first to extract the transcript sequences from the gtf transcript file :</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
 <div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">module</span> load BioPerl
 
-<span class="bu">export</span> <span class="va">PERL5LIB=$PERL5LIB</span>:~/assembly/GAAS/annotation/
-<span class="ex">~/assembly/GAAS/annotation/Tools/bin/gff3_sp_extract_sequences.pl</span> --cdna -g transcripts.gtf -f ~/assembly/assembly_annotation/chromosome/chr4.fa -o transcripts_stringtie.fa</code></pre></div>
+<span class="bu">export</span> <span class="va">PERL5LIB=$PERL5LIB</span>:./GAAS/annotation/
+<span class="ex">./GAAS/annotation/Tools/bin/gff3_sp_extract_sequences.pl</span> --cdna -g transcripts.gtf -f /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/assembly_annotation/chromosome/chr4.fa -o transcripts_stringtie.fa</code></pre></div>
 </div>
 <p>Then you can run BUSCO again :</p>
 <div class="block-title-parent">
@@ -694,12 +699,12 @@ sh
 </div>
 <div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">/sw/apps/bioinfo/BUSCO/3.0.2b/rackham/bin/run_BUSCO.py</span> -i stringtie/transcripts_stringtie.fa -o busco_stringtie -l <span class="va">$BUSCO_LINEAGE_SETS</span>/arthropoda_odb9 -m tran -c 5</code></pre></div>
 </div>
-<p>Compare the two BUSCO results, what do you think happened for StringTie?</p>
+<p><i class="fas fa-clipboard-list"></i> Compare the two BUSCO results, what do you think happened for StringTie?</p>
 </div>
 <div id="whats-next" class="section level2">
 <h2><span class="header-section-number">3.2</span> What’s next?</h2>
 <p>Now you are ready either to annotate your RNA-Seq or you can use then to do the genome annotation.</p>
-<p>For the de-novo assembly you can use the <code>Trinity.fasta</code> file obtained. For the genome-guided assembly you can either use the Stringtie results transcripts.gtf but you will often need to reformat it into a gff file.</p>
+<p>For the de-novo assembly you can use the <code>Trinity.fasta</code> file obtained. For the genome-guided assembly you can either use the StringTie results <code>transcripts.gtf</code>, but you will often need to reformat it into a gff file.</p>
 <p><strong>End of document</strong></p>
 </div>
 </div>

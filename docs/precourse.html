@@ -392,10 +392,9 @@ $(document).ready(function () {
 <p><br></p>
 <p>These are steps to be completed before the course.</p>
 <ul>
-<li><p>A SUPR/SNIC account is needed to use UPPMAX resources. If you do not already have one, <a href="https://supr.snic.se/">create an account</a>.</p></li>
-<li><p>Log in to <a href="https://supr.snic.se/">SUPR/SNIC</a> and request membership to the project <strong>g2019008</strong>.</p></li>
-<li><p>Make sure you can connect to the Uppmax cluster Rackham through a terminal. If you are on a PC, we recommend <a href="http://mobaxterm.mobatek.net">MobaXterm</a>. Type <code>ssh user@rackham.uppmax.uu.se</code> and then enter your password. The password will not be visible as you type.</p></li>
-<li><p>If you still feel uncertain how to work in a terminal, please take time to do the first three parts in the <em>Unix tutorial for beginners</em> that can be found here <a href="http://www.ee.surrey.ac.uk/Teaching/Unix/" class="uri">http://www.ee.surrey.ac.uk/Teaching/Unix/</a> before the workshop starts. Otherwise you will not be able to take in the practical parts.</p></li>
+<li><p>A remote computing cluster (UPPMAX) will be use for handling raw sequence data. A SUPR/SNIC account is needed to use UPPMAX resources. If you do not already have one, <a href="https://supr.snic.se/">create an account</a>. Log in to <a href="https://supr.snic.se/">SUPR/SNIC</a> and request membership to the project <strong>g2019008</strong>.</p></li>
+<li><p>Make sure you can connect to the Uppmax cluster Rackham through a terminal. If you are on a PC, we recommend <a href="http://mobaxterm.mobatek.net">MobaXterm</a>. For MobaXterm users, it is recommended that you install the program and not use the portable version. Type <code>ssh -Y user@rackham.uppmax.uu.se</code> and then enter your password. The password will not be visible as you type.</p></li>
+<li><p>If you do not feel comfortable working in a terminal, please take the time to do the first three parts in the <em><a href="http://www.ee.surrey.ac.uk/Teaching/Unix/">Unix tutorial for beginners</a></em> before the workshop. Otherwise, it will be difficult for you to follow the exercises during the course.</p></li>
 <li><p>Make sure that you can read and write in the workshop folder. Go to <code>/proj/g2019008/nobackup/</code> and create a directory with your username. You will work inside this directory for the course. If you cannot write to the folder, the most likely reason is that you have not requested acess to the workshop project via SUPR.<br />
 <i class="fas fa-exclamation-circle"></i> Note that it may take an hour or so from request approval, before you can actually write to the folder.<br />
 <i class="fas fa-exclamation-circle"></i> We will check before the workshop that all students have logged in and done this, so do not forget!</p></li>
@@ -408,7 +407,10 @@ $(document).ready(function () {
 <div class="block-title small">
 R
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;DESeq2&quot;</span>,<span class="st">&quot;edgeR&quot;</span>,<span class="st">&quot;tidyverse&quot;</span>,<span class="st">&quot;biomaRt&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># sets repositories to CRAN and Bioconductor</span>
+<span class="kw">setRepositories</span>(<span class="dt">graphics=</span>F,<span class="dt">ind=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>))
+<span class="co"># installs R packages from CRAN and Bioconductor</span>
+<span class="kw">install.packages</span>(<span class="st">&quot;DESeq2&quot;</span>,<span class="st">&quot;edgeR&quot;</span>,<span class="st">&quot;tidyverse&quot;</span>,<span class="st">&quot;biomaRt&quot;</span>,<span class="st">&quot;pheatmap&quot;</span>,<span class="st">&quot;pvclust&quot;</span>)</code></pre></div>
 </div>
 <p><strong>End of document.</strong></p>
 

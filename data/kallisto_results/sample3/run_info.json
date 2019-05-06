@@ -1,0 +1,9 @@
+{
+	"n_targets": 210085,
+	"n_bootstraps": 100,
+	"n_processed": 7309217,
+	"kallisto_version": "0.42.4",
+	"index_version": 10,
+	"start_time": "Tue Apr 12 20:03:23 2016",
+	"call": "kallisto quant -i hsGRCh38_kallisto -t 4 -b 100 -o sample3 7_111116_AD0341ACXX_137_3_index3_1.fastq.gz 7_111116_AD0341ACXX_137_3_index3_2.fastq.gz"
+}

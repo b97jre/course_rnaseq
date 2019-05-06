@@ -45,11 +45,15 @@ RMarkdown presentation files for various topics. Replace 'topic' with a short na
 [**lab_topic.Rmd**]  
 RMarkdown lab files for various topics. Replace 'topic' with a short name of the topic.  
 
+## Dependencies
+
+The `assets` directory contains css styles, headers, footers, logos etc. If you are using images in your .Rmd file, place them in the directory `images` and refer to them using relative path like `![](./images/image.jpg)`. Images generated in R during rendering of the .Rmd file is automatically handled. If you have data (tsv, csv, txt text files, .Rds files), place them inside the directory `data` and read them using relative path `x <- read.delim("./data/table.txt")`.
+
 ## Rendering
 
-The website is rendered by running `rmarkdown::render_site()` in the project directory. This generates the HTML files and all other necessary files and moves them into a directory named **docs**. Open **docs/index.html** to start. The output directory is set to **docs** because this GitHub repo uses the **docs** directory as the Github pages (rendered content) source.
+The website is rendered by running `rmarkdown::render_site()` in the project directory. This generates the HTML files and all other necessary files (including the assets, images and data directories) and moves them into a directory named **docs**. Open **docs/index.html** to start. The output directory is set to **docs** because this GitHub repo uses the **docs** directory as the Github pages (rendered content) source.
 
-For testing purposes, you can run `rmarkdown::render("bla.Rmd")` on individual Rmd files. This is a time-saver as the whole website need not be rendered just to preview this one file. 
+For testing purposes, you can run `rmarkdown::render("bla.Rmd")` on individual Rmd files. This is a time-saver as the whole website need not be rendered just to preview this one file.
 
 ---
 

@@ -473,3 +473,11 @@ ggsave(filename="plot-ggplot-2.png",plot=p)
 - [R Cookbook](http://www.cookbook-r.com/): General purpose reference.
 - [Quick R](https://www.statmethods.net/): General purpose reference.
 - [Stackoverflow](https://stackoverflow.com/): Online community to find solutions to your problems.
+
+# Session info
+
+```{r,echo=FALSE}
+sessionInfo()
+```
+
+__End of document__

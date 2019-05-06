@@ -204,4 +204,10 @@ There are lots of things to look at here - explore according to your interests! 
 
 If you want to delve further into time series analysis with Sleuth (after all, we have just compared two time points here, whereas we have four in all), you might want to read this [excellent blog post](http://www.nxn.se/valent/timecourse-analysis-with-sleuth) by Valentine Svensson. Note that Sleuth is still under development, so some of the commands may be a bit different.
 
+# Session info
+
+```{r,echo=FALSE}
+sessionInfo()
+```
+
 **End of document.**

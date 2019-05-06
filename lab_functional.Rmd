@@ -1,0 +1,101 @@
+---
+title: "Functional analyses"
+subtitle: "Workshop on RNA-Seq"
+author: "`r paste0('Paulo Czarnewski | <b>NBIS</b> | ',format(Sys.time(), '%d-%b-%Y'))`"
+output:
+  bookdown::html_document2:
+          toc: true
+          toc_float: true
+          toc_depth: 4
+          number_sections: true
+          theme: flatly
+          highlight: tango
+          df_print: paged
+          code_folding: "none"
+          self_contained: false
+          keep_md: false
+          encoding: 'UTF-8'
+          css: "assets/lab.css"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r,child="assets/header-lab.Rmd"}
+```
+
+<!-- ------------ Only edit title, subtitle & author above this ------------ -->
+
+Loading packages and data
+
+```{r}
+#load the packages you need
+library(pheatmap)
+library(rafalib)
+library(DESeq2)
+library(pvclust)
+library(biomaRt)
+```
+
+# Functional Analysis
+## Overrepresentation analysis
+### enrichR
+
+```{r,results='hide',block.title=TRUE,fig.height=5,fig.width=10}
+
+```
+
+## GSA
+### piano
+
+```{r,results='hide',block.title=TRUE,fig.height=5,fig.width=10}
+
+```
+
+### Links to packages:
+
+topGO  
+goana  
+topKEGG  
+kegga  
+romer  
+piano  
+roast  
+fry  
+camera  
+
+### Links to webtools:
+
+Package | link | Database | Comment  
+GOrilla | http://cbl-gorilla.cs.technion.ac.il | GO | Support for REVIGO  
+REVIGO | http://revigo.irb.hr | GO | Summarises redundancy  
+Enrichr | http://amp.pharm.mssm.edu/Enrichr/ | GO, KEGG, TF,  many others  | Extensive   
+DAVID | https://david.ncifcrf.gov | GO, KEGG, TF, many others | *Not updated  
+KEGG | https://www.genome.jp/kegg/ | KEGG | Shows the pathways  
+
+***
+## GSEA
+
+```{r,results='hide',block.title=TRUE,fig.height=5,fig.width=10}
+
+```
+
+
+***
+## Cell-type enrichment / deconvolution
+
+* xCell
+
+```{r,results='hide',block.title=TRUE,fig.height=5,fig.width=10}
+
+```
+
+***
+## Protein-protein interactions
+
+### Links to webtools:
+
+* GeneMANIA: https://genemania.org
+* STRING-DB: https://string-db.org
+* MIST: https://fgrtools.hms.harvard.edu/MIST/help.jsp
+
+__End of document__

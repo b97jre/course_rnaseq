@@ -39,9 +39,9 @@ Most of the analyses is carried out in R and it will be useful to learn some bas
 
 [<i class="fas fa-link"></i> <span class="large">Introduction to R</span>](lab_r.html)  
 
-This topic covers retrieving annotation data needed for RNA-seq analyses. These include gene annotation IDs such as mapping between Ensembl IDs and Gene IDs, GO terms and transcript IDs. We also cover retrieving genomic data from Ensembl and GEO.
+This topic covers retrieving supporting data needed for RNA-seq analyses. These include gene annotation IDs such as mapping between Ensembl IDs and Gene IDs, GO terms and transcript IDs. We also cover retrieving genomic data from Ensembl and GEO.
 
-[<i class="fas fa-link"></i> <span class="large">Retrieving annotation data</span>](lab_download.html)
+[<i class="fas fa-link"></i> <span class="large">Downloading data</span>](lab_download.html)
 
 # Main lab
 ## Data
@@ -78,11 +78,11 @@ We find genes that are differentially expressed between our time points.
 
 [<i class="fas fa-link"></i> <span class="large">DGE using DEseq2</span>](lab_dge.html)  
 
-## Gene set analysis
+## Functional analysis
 
-We will perform gene-set analysis on the differentially expressed genes to place them into a function context and explain biological consequences of DE.
+We will perform functional analysis on the differentially expressed genes to place them into a function context and possibly explain the biological consequences of DE. Methods covered are GSA (Gene set analysis) and GSEA (Gene set enrichment analysis).
 
-[<i class="fas fa-link"></i> <span class="large">Gene set analysis</span>]()
+[<i class="fas fa-link"></i> <span class="large">Functional analysis</span>](lab_functional.html)
 
 # Bonus labs
 
@@ -129,5 +129,11 @@ This data set contains three PacBio reads for the gene RAB11FIP5, extracted from
 The peptide data set contains mapped peptide fragments from mass spectrometry (MS) carried out on protein samples from A431 cells. These data were measured by a group at SciLifeLab Stockholm in a ‘proteogenomics’ study where the aim was to discover new genes or gene variants by deep proteomic profiling using an MS method, and mapping the obtained peptides back to the genome. How it was possible to map MS data onto the human genome is explained [here](http://www.nature.com/nmeth/journal/v11/n1/full/nmeth.2732.html).
 
 [<i class="fas fa-link"></i> <span class="large">Integrative-omics</span>](lab_integration.html)
+
+## Exploratory data analyses
+
+This section dives deeper into exploratory analyses PCA and hierarchical clustering.
+
+[<i class="fas fa-link"></i> <span class="large">PCA & Hierarchical clustering</span>](lab_eda.html)  
 
 **End of document**

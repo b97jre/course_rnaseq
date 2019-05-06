@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Johan Reimegård | 25-Apr-2019" />
+<meta name="author" content="Johan Reimegård | 06-May-2019" />
 
 
 <title>Small RNA-Seq Analysis</title>
@@ -483,7 +483,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Small RNA-Seq Analysis</h1>
 <h3 class="subtitle">Workshop on RNA-Seq</h3>
-<h4 class="author"><b>Johan Reimegård</b> | 25-Apr-2019</h4>
+<h4 class="author"><b>Johan Reimegård</b> | 06-May-2019</h4>
 
 </div>
 
@@ -492,9 +492,6 @@ div.tocify {
 <!-- custom fonts -->
 <p><link href="https://fonts.googleapis.com/css?family=Roboto|Source+Sans+Pro:300,400,600|Ubuntu+Mono&amp;subset=latin-ext" rel="stylesheet"></p>
 <p><br></p>
-<p class="large danger" ">
-THIS TOPIC NEEDS TO BE REVIEWED
-</p>
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p>In this exercise we will analyze a few small RNA libraries, from <em>Drosophila melanogaster</em> (fruit fly) embryos and two cell lines (KC167 cells derived from whole embryos, and ML-DmD32 cells derived from adult wing discs). This is a subset of a much larger data set used to study microRNAs and other small RNAs in Drosophila:</p>
@@ -516,22 +513,23 @@ THIS TOPIC NEEDS TO BE REVIEWED
 sh
 </div>
 <div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">module</span> load bioinfo-tools
+<span class="ex">module</span> load samtools
 <span class="ex">module</span> load cutadapt
 <span class="ex">module</span> load bowtie
 <span class="ex">module</span> load subread/1.5.2</code></pre></div>
 </div>
-<p>And create a directory to work in:</p>
+<p>And we create a directory under bonus to work in.</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> ~/RNAseqCourse/smallRNA</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> bonus/smallrna</code></pre></div>
 </div>
 <p>All data and scripts required for this exercise can be found in <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/smallRNA</code> on UPPMAX.</p>
 <p>This includes:</p>
 <ul>
 <li>5 fastq files with the raw reads from the small RNA sequencing (in the subdirectory fastq).</li>
-<li>Precomputed bam files with the sequencing data mapped to the entire Drosophila genome, which can be used for browsing in IGV (in the subdirectory mapped_to_genome).</li>
+<li>Precomputed BAM files with the sequencing data mapped to the entire Drosophila genome, which can be used for browsing in IGV (in the subdirectory mapped_to_genome).</li>
 <li>A gff file with the coordiates of all mircoRNAs on the Drosophila genome. (Use the file dme_mirbase_FORMAT2016.gff3 in the subdirectory mirbase).</li>
 </ul>
 <p>Copy these files in the directory you will use for this exercise. On UPPMAX you can use the following command:</p>
@@ -539,9 +537,10 @@ sh
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">cp</span> -r /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/smallRNA dest</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span> /bonus/smallrna
+<span class="fu">cp</span> -r /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/smallRNA/* .</code></pre></div>
 </div>
-<p>where dest is the destination directory. (This might take a while since the fastq files are quite large)</p>
+<p>This might take a while since the fastq files are quite large.</p>
 </div>
 <div id="adaptor-trimming" class="section level1">
 <h1><span class="header-section-number">3</span> Adaptor trimming</h1>
@@ -551,7 +550,7 @@ sh
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">less</span> <span class="op">&lt;</span>in.fastq<span class="op">&gt;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">less</span> file.fastq</code></pre></div>
 </div>
 <p>Just by looking the nucleotide sequence, can you guess what the adaptor is? (This is actually a useful exercise. Many datasets are poorly annotated, and no information is given about the adaptor sequence. When analyzing such data the only option is to infer the adaptor from the sequence data.)</p>
 <p>There are many programs available for trimming adaptors. We will use a program called <a href="https://cutadapt.readthedocs.org/en/stable/">cutadapt</a>. You can run it with the following command:</p>
@@ -559,62 +558,71 @@ sh
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">cutadapt</span> -a <span class="op">&lt;</span>adaptor<span class="op">&gt;</span> --trimmed-only <span class="op">&lt;</span>in.fastq<span class="op">&gt;</span> --minimum-length=17 <span class="op">&gt;</span> <span class="op">&lt;</span>trimmed.fastq<span class="op">&gt;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">cutadapt</span> -a [adaptor] --trimmed-only [in.fastq] --minimum-length=17 <span class="op">&gt;</span> [trimmed.fastq]</code></pre></div>
 </div>
 <p>This trims the sequence given in adaptor from the reads in in.fastq and prints the results to a new file trimmed.fastq. It also applies the following filters: only reads where the adaptor was trimmed are printed to the output, and only reads that are at least 17 nucleotides after trimming are printed. For the data in this exercise, use the adaptor sequence <code>CTGTAGGCACCATC</code>.</p>
 <p>Run this program on each of the 6 fastq files. This takes a few minutes per file. Make sure you give the resulting files good names (e.g. kc167_TRIM.fastq) so you can keep track of all files.</p>
-<p><strong>How many reads were removed because they didn’t have the adaptor sequence or because they were to short?</strong></p>
+<p><i class="fas fa-comments"></i> How many reads were removed because they didn’t have the adaptor sequence or because they were to short?</p>
 </div>
 <div id="mapping" class="section level1">
 <h1><span class="header-section-number">4</span> Mapping</h1>
-<p>The next step is to align (map) the reads to the genome sequence around the microRNA loci. We will use the program <a href="http://bowtie-bio.sourceforge.net/index.shtml">bowtie</a> to do this. We will map the reads against the entire <em>Drosophila</em> genome. To be able to map millions of reads very fast, bowtie uses an index of the sequence we map against. You find an index of the <em>Drosophila</em> genome at <code>/sw/data/uppnex/igenomes/Drosophila_melanogaster/UCSC/dm3/Sequence/BowtieIndex/genome</code>. To map all reads we use the following command: ::</p>
+<p>The next step is to align (map) the reads to the genome sequence around the microRNA loci. We will use the program <a href="http://bowtie-bio.sourceforge.net/index.shtml">bowtie</a> to do this. We will map the reads against the entire <em>Drosophila melanogaster</em> genome. To be able to map millions of reads very fast, bowtie uses an index of the sequence we map against. You find an index of the <em>Drosophila</em> genome at <code>/sw/data/uppnex/igenomes/Drosophila_melanogaster/UCSC/dm3/Sequence/BowtieIndex/genome</code>. To map all reads we use the following command: ::</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">bowtie</span> -q -v 0 -k 10 -S -t <span class="op">&lt;</span>index.name<span class="op">&gt;</span> <span class="op">&lt;</span>small_rna.fastq<span class="op">&gt;</span> <span class="op">&lt;</span>out.sam<span class="op">&gt;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">bowtie</span> -q -v 0 -k 10 -S -t [index.name] [small_rna.fastq] [out.sam]</code></pre></div>
 </div>
-<p>Here, index.name is the bowtie index above, small_rna.fastq is the file with the small RNA data (after trimming!) and out.sam is the resulting file. This maps the reads with the following settings: input is a fastq file (-q), no mismatches are allowed (-v 0), max 10 hits are reported for each read (-k 10), output is a sam file (-S) and the time the mapping took is printed to the screen (-t). Run this command once for every file with trimmed reads. It takes around one minute for each data set.</p>
-<p>(If you feel like it, try mapping one of the fastq files where the adaptor was not trimmed, and see what happens.)</p>
+<p>Here, <em>index.name</em> is the bowtie index above, <em>small_rna.fastq</em> is the file with the small RNA data (after trimming!) and <em>out.sam</em> is the resulting file. This maps the reads with the following settings: input is a fastq file (-q), no mismatches are allowed (-v 0), max 10 hits are reported for each read (-k 10), output is a SAM file (-S) and the time the mapping took is printed to the screen (-t). Run this command once for every file with trimmed reads. It takes around one minute for each data set.</p>
+<div class="optional">
+<p><strong>Optional</strong><br />
+<i class="fas fa-clipboard-list"></i> You can try mapping one of the fastq files where the adaptor was not trimmed, and see what happens.</p>
+</div>
 </div>
 <div id="igv" class="section level1">
 <h1><span class="header-section-number">5</span> IGV</h1>
-<p>It is often informative to just browse the reads once they have been mapped to genome. For this we will use pre-computed bam files, which can be viewed with IGV or some other genome browser. These are basically the same as the sam files created by bowtie, but converted to a compressed binary format and sorted. (Here only instructions for IGV are given.) Start IGV and load the files emb_0_1.sorted.bam and ml-DmD32_r2.sorted.bam. Also load the file with all microRNA annotations, dme_mirbase.gff3.</p>
-<p>To load a file you first select the correct genome (“D. melanogaster r5.22”) in the top left menu. Then go to the File menu, and select “Load from file”, and select the files described above.</p>
-<p>Type the name of a microRNA, e.g “mir-124”, to go to that locus. You can see that the read mapping patterns are very distinct: (Almost) only the processed microRNAs end in the sequencing libraries, and you can see reads from both arms of the hairpin structure.</p>
-<p>While many microRNAs occur alone in the genome, other are arranged in clusters. Type “let-7” to browse such a cluster. <strong>How many microRNAs do you see in this region?</strong></p>
-<p>(To see something weird, go to “3R:18,118,436-18,118,767”. <strong>Do you have any idea what this could be?</strong>)</p>
+<p>It is often informative to just browse the reads once they have been mapped to genome. For this we will use pre-computed BAM files, which can be viewed with IGV or some other genome browser. These are basically the same as the SAM files created by bowtie, but converted to a compressed binary format and sorted. Start IGV and load the files <strong>emb_0_1.sorted.bam</strong> and <strong>ml-DmD32_r2.sorted.bam</strong>. Also load the file with all microRNA annotations <strong>dme_mirbase.gff3</strong>.</p>
+<p><i class="fas fa-lightbulb"></i> IGV can be started on UPPMAX using <code>module load IGV; igv.sh&amp;</code>.</p>
+<p>To load a file you first select the correct genome (<strong>D. melanogaster r5.22</strong>) in the top left menu. Then go to the <em>File &gt; Menu</em>, and select <em>Load from file</em>, and select the files described above.</p>
+<p>Type the name of a microRNA, e.g <strong>mir-124</strong>, to go to that locus. You can see that the read mapping patterns are very distinct: (Almost) only the processed microRNAs end in the sequencing libraries, and you can see reads from both arms of the hairpin structure. While many microRNAs occur alone in the genome, other are arranged in clusters. Type <strong>let-7</strong> to browse such a cluster.</p>
+<p><i class="fas fa-comments"></i> How many microRNAs do you see in this region?</p>
+<div class="optional">
+<p><strong>Optional</strong><br />
+To see something weird, go to <strong>3R:18,118,436-18,118,767</strong>. <i class="fas fa-comments"></i>Do you have any idea what this could be?</p>
+</div>
 </div>
 <div id="quantification" class="section level1">
 <h1><span class="header-section-number">6</span> Quantification</h1>
-<p>We can now summarize the mapped reads to see which microRNAs are expressed in the different samples, and to do some global comparisons. For this, we use the sam files created by bowtie. If you have not seen a sam file before, have a look at one of the files, for example by running:</p>
+<p>We can now summarize the mapped reads to see which microRNAs are expressed in the different samples, and to do some global comparisons. For this, we use the SAM files created by bowtie. If you have not seen a SAM file before, have a look at one of the files, for example by running:</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">less</span> <span class="op">&lt;</span>out.sam<span class="op">&gt;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">less</span> [out.sam]</code></pre></div>
 </div>
-<p>Press space to scroll down into the file and <kb>q</kbd> to exit the viewer.</p>
-<p>We are only interested in the reads mapping to known microRNA loci in <a href="http://www.mirbase.org">miRBase</a>, which is the “official” data base of microRNAs in many different species. The file <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/smallRNA/mirbase/dme_mirbase_FORMAT2016.gff3</code> contains the locations of all microRNAs on the fly genome. Use <code>less</code> to have a look at this file. <a href="http://bioinf.wehi.edu.au/featureCounts/">featureCounts</a> is a useful program for counting reads mapping to different genomic regions. Run it like this, for all sam file at once:</p>
+<p>Press <kbd>SPACE</kbd> to scroll down into the file and <kbd>Q</kbd> to exit the viewer.</p>
+<p>We are only interested in the reads mapping to known microRNA loci in <a href="http://www.mirbase.org">miRBase</a>, which is the “official” data base of microRNAs in many different species. The file <code>/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/smallRNA/mirbase/dme_mirbase_FORMAT2016.gff3</code> contains the locations of all microRNAs on the fly genome. Use <code>less</code> to have a look at this file. <a href="http://bioinf.wehi.edu.au/featureCounts/">featureCounts</a> is a useful program for counting reads mapping to different genomic regions. Run it like this, for all SAM files at once:</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">featureCounts</span> -t miRNA -g Name -O -s 1 -M -a <span class="op">&lt;</span>mirbasefile<span class="op">&gt;</span> -o <span class="op">&lt;</span>outfile<span class="op">&gt;</span> <span class="op">&lt;</span>samfiles<span class="op">&gt;</span> </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">featureCounts</span> -t miRNA -g Name -O -s 1 -M -a [mirbasefile] -o [outfile] [samfiles ...] </code></pre></div>
 </div>
-<p>Here we only look at loci that are “miRNA”, and we use the “Name” attribute to name the loci. The -O flag tells the program that reads that map to several overlapping microRNAs should be assigned to all of them. The -s 1 flag tells the probram to only count reads that map to the same strand as the microRNA, and the -M flag makes sure we count multi mapping reads. The output will be a list with the number of reads mapping to each microRNA. <code>featureCounts</code> takes around a few minutes to run. When the program has finished, look at the results with <code>less</code>.</p>
+<p>Here we only look at loci that are miRNA, and we use the <strong>Name</strong> attribute to name the loci. The <code>-O</code> flag tells the program that reads that map to several overlapping microRNAs should be assigned to all of them. The <code>-s 1</code> flag tells the probram to only count reads that map to the same strand as the microRNA, and the <code>-M</code> flag makes sure we count multi mapping reads. The output will be a list with the number of reads mapping to each microRNA. <code>featureCounts</code> takes around a few minutes to run. When the program has finished, look at the results with <code>less</code>.</p>
 </div>
 <div id="dge" class="section level1">
 <h1><span class="header-section-number">7</span> DGE</h1>
 <p>Once the reads mapping to each microRNA have been counted, we can analyze the microRNA expression levels using R.</p>
-<p>You can run R on uppmax by running</p>
+<p>You can run R on UPPMAX by running</p>
 <div class="block-title-parent">
 <div class="block-title small">
 sh
 </div>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">R</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">module</span> load R/3.5.2
+<span class="ex">module</span> load R_packages/3.5.2
+<span class="ex">R</span></code></pre></div>
 </div>
-<p>You will see a different prompt, since you are now typing commands to R. You can always exit R with quit().</p>
+<p>You will see a different prompt, since you are now typing commands to R. You can always exit R with <code>quit()</code>.</p>
 <p>Alternatively, you can run RStudio locally on your system. In this case, you need to download the count tables.</p>
 <p>To combine the files you just created into an expression table, use the following commands:</p>
 <div class="block-title-parent">
@@ -663,7 +671,7 @@ R
 R
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lib.size &lt;-<span class="st"> </span><span class="kw">apply</span>(exp.data,<span class="dv">2</span>,sum)
-scale.factors &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(exp.data, <span class="dt">method=</span><span class="st">&quot;TMM&quot;</span>) </code></pre></div>
+scale.factors &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(exp.data, <span class="dt">method=</span><span class="st">&quot;TMM&quot;</span>)</code></pre></div>
 </div>
 <p>Next, we apply the rescaling to the read counts for each library:</p>
 <div class="block-title-parent">
@@ -714,8 +722,9 @@ R
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">heatmap</span>(norm.data, <span class="dt">scale=</span><span class="st">&quot;none&quot;</span>, <span class="dt">cexRow=</span><span class="fl">0.2</span>, <span class="dt">cexCol=</span><span class="fl">0.6</span>)</code></pre></div>
 </div>
-<p>In the resulting plot each library is a column and each microRNA is a row. The color indicates the expression levels, with red being no reads and more yellow indicating higher expression. The dendrogram at the top shows how the libraries cluster together. <strong>What can you learn from looking at this plot?</strong></p>
-<p>Another function to create heatmaps R is <em>pheatmap</em>. To use it, do</p>
+<p>In the resulting plot each library is a column and each microRNA is a row. The color indicates the expression levels, with red being no reads and more yellow indicating higher expression. The dendrogram at the top shows how the libraries cluster together.</p>
+<p><i class="fas fa-comments"></i> What can you learn from looking at this plot?</p>
+<p>Another function to create heatmaps R is <code>pheatmap()</code> from the <strong>pheatmap</strong> R package. To use it, do</p>
 <div class="block-title-parent">
 <div class="block-title small">
 R
@@ -723,7 +732,7 @@ R
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(pheatmap)
 <span class="kw">pheatmap</span>(norm.data, <span class="dt">scale=</span><span class="st">&quot;none&quot;</span>, <span class="dt">fontsize_row=</span><span class="dv">3</span>)</code></pre></div>
 </div>
-<p>If the library pheatmap isn’t installed, you can download and install it with</p>
+<p>If the library <strong>pheatmap</strong> isn’t installed, you can download and install it with</p>
 <div class="block-title-parent">
 <div class="block-title small">
 R

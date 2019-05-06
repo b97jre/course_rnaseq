@@ -23,11 +23,11 @@ date;room;dur;topic;person;link_presentation;link_lab;link_room
 ;;20;Coffee Break;;;;
 ;;40;Visualisation;Roy Francis;;lab_dge.html#5_visualisation;
 ;;40;Visualisation;Roy Francis;;;
-15/05/2019;E10:1309;40;PCA;Paulo Czarnewski;;;http://bit.ly/2UKjEoQ
-;;40;Hierarchical Clustering;Paulo Czarnewski;;;
+15/05/2019;E10:1309;40;PCA;Paulo Czarnewski;;lab_eda.html;http://bit.ly/2UKjEoQ
+;;40;Hierarchical Clustering;Paulo Czarnewski;;lab_eda.html;
 ;;20;Coffee Break;;;;
 ;;40;Hierarchical Clustering;Paulo Czarnewski;;;
-;;40;GSA & GSEA;Paulo Czarnewski;;;
+;;40;GSA & GSEA;Paulo Czarnewski;;lab_functional.html;
 ;;60;Lunch;;;;
 ;;40;GSA & GSEA;Paulo Czarnewski;;;
 ;;40;GEO;Paulo Czarnewski;;;
