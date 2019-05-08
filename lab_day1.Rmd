@@ -1,0 +1,519 @@
+---
+title: "Day 1 on the RNA-Seq Analysis"
+subtitle: "Workshop on RNA-Seq"
+author: "`r paste0('<b>Johan Reimegård</b> | ',format(Sys.time(), '%d-%b-%Y'))`"
+output:
+  bookdown::html_document2:
+          toc: true
+          toc_float: true
+          toc_depth: 4
+          number_sections: true
+          theme: flatly
+          highlight: tango
+          df_print: default
+          code_folding: "none"
+          self_contained: false
+          keep_md: false
+          encoding: 'UTF-8'
+          css: "assets/lab.css"
+---
+
+```{r,child="assets/header-lab.Rmd"}
+```
+
+
+
+
+# Quality control
+
+In this tutorial we will go through some of the key steps in performing a quality control on your samples. We will start with the read based quality control, using FastQC, and continue with mapping based QC using RseqQC.  
+
+
+All the data you need for this lab is available in the folder:
+`/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/data/`
+
+
+This folder contains:
+
+* Two FASTQ files, with mate pair libraries for sample 1 that is used in several of the other exercises (see [data set summary page](intro).
+* BAM file and BAM-file index (bam.bai) for that sample mapped to the human genome using STAR
+* count_table.txt - a table with number of reads per gene, using Ensembl annotations, created with HTseq-count
+
+## Before mapping 
+
+
+### Get FastQC statistics on one fastQ file
+
+FastQC aims to provide a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing pipelines. It provides a modular set of analyses which you can use to get a quick impression of whether your data has any problems of which you should be aware before doing any further analysis.
+
+The main functions of FastQC are:
+
+  * Import of data from BAM, SAM or FASTQ files (any variant)
+  * Providing a quick overview to tell you in which areas there may be problems
+  * Summary graphs and tables to quickly assess your data
+  * Export of results to an HTML-based permanent report
+  * Offline operation to allow automated generation of reports without running the interactive application
+
+You can read more about the program and have a look at example reports at [the FastQC website](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+
+Note: This program can be used for any type of NGS data, not only RNA-seq.
+
+To run FastQC on uppmax you first need to load the module:
+	
+	module load bioinfo-tools
+	module load FastQC/0.11.5
+	
+	# To see help information on the FastQC package:
+	fastqc --help
+	# Run for one FASTQ file:
+	fastqc -o outdir fastqfile
+	
+	# Run on multiple FASTQ files:
+	fastqc -o outdir fastqfile1 fastqfile2 etc.
+	
+	# You can use wildcards to run on all FASTQ files in a directory:
+	fastqc -o outdir /proj/b2013006/INBOX/FASTQ/*fastq
+
+In this case, only run FastQC on one file and take a look at the output. We have already prepared the outputs for all of the other samples. These can be copied from uppmax at:
+`/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/fastQC/`
+
+Take a look at some other file and see if it look similar in quality.
+
+### MultiQC report for multiple FastQC reports
+
+MultiQC is a program that creates summaries over all samples for several different types of QC-measures. You can read more about the program [here](http://multiqc.info/). It will automatically look for output files from the supported tools and make a summary of them. You can either go to the folder where you have the Fastqc output or run it with the path to the folder.  
+
+	module load bioinfo-tools
+	module load MultiQC/1.5
+	multiqc /folder/with/FastQC_results/
+	# in this case the folder is /proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/fastQC/
+
+This should create 1 folder named `multiqc_data` with some general stats, links to all files etc. And one file `multiqc_report.html`. 
+Have a look at the report you created or at the one we alredy ran. You can find it on uppmax at `/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/fastQC/multiqc_report.html` 
+
+## After mapping
+These steps can be made after the fastq files have been aligned to the reference. The steps for doing this can be found 
+
+### map logs for one sample
+
+The first step after you have finished your mapping is to get a general feel of how the mapping went. Most mapping programs produce some sort of summary output, either to a file or to standard out. For example, if using the mapper Bowtie you need to pipe that output to a file to see the summary statistics. In this case the samples were mapped with STAR, that by default creates a file called Log.final.out in the mapping directory. Here is one example of Log.final.out content:
+
+                                 Started job on |       Oct 16 20:21:39
+                             Started mapping on |       Oct 16 20:27:04
+                                    Finished on |       Oct 16 20:29:14
+       Mapping speed, Million of reads per hour |       366.35
+
+                          Number of input reads |       13229276
+                      Average input read length |       202
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |       11913568
+                        Uniquely mapped reads % |       90.05%
+                          Average mapped length |       198.41
+                       Number of splices: Total |       9523918
+            Number of splices: Annotated (sjdb) |       9443434
+                       Number of splices: GT/AG |       9432792
+                       Number of splices: GC/AG |       71488
+                       Number of splices: AT/AC |       10675
+               Number of splices: Non-canonical |       8963
+                      Mismatch rate per base, % |       0.33%
+                         Deletion rate per base |       0.01%
+                        Deletion average length |       1.75
+                        Insertion rate per base |       0.01%
+                       Insertion average length |       1.39
+                             MULTI-MAPPING READS:
+        Number of reads mapped to multiple loci |       356839
+             % of reads mapped to multiple loci |       2.70%
+        Number of reads mapped to too many loci |       2102
+             % of reads mapped to too many loci |       0.02%
+                                  UNMAPPED READS:
+       % of reads unmapped: too many mismatches |       0.00%
+                 % of reads unmapped: too short |       7.21%
+                     % of reads unmapped: other |       0.02%
+
+The most important parts to look at are the proportion of uniquely mapping, multi-mapping and unmapped reads. We ideally want the uniquely mapping reads to be as high as possible. Multi-mapping or unmapped reads could indicate poor quality of the reads, adapter contamination or other reasons for low quality scores.cd 
+
+Another key point is the mismatch and indel rates. If they are very high, this could indicate that there has been some problems during the sequencing or during the library preparation.
+
+###MultiQC summary of multiple map logs 
+
+After mapping with star of all samples, we ran MultiQC to summarize all the logfiles. In this case we had a folder structure with sample_name/Log.final.out, so to make sure that MultiQC understands what is the sample name, we used the -dd 2 command (e.g. it splits up the path and names the samples after the second last part).
+
+	# OBS! do not run now, just for reference
+	module load bioinfo-tools
+	module load MultiQC/0.8
+	multiqc -d -dd 2 .
+
+You can find the output from that MultiQC report on uppmax   `/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/output/multiqc_report_star.htm`
+
+### Quality controll of single files RseQC
+
+The RseQC package is one of many tools to get basic mapping statistics from your BAM files. This package provides a number of useful modules that can comprehensively evaluate high throughput sequence data, especially RNA-seq data. Some basic modules quickly inspect sequence quality, nucleotide composition bias, PCR bias and GC bias, while RNA-seq specific modules evaluate sequencing saturation, mapped reads distribution, coverage uniformity, strand specificity, etc. You can read more about the package at [the RseQC website](http://rseqc.sourceforge.net/).
+
+The RseQC package contains many steps that are equivalent to FastQC analysis, e.g. read quality, sequence composition (NVC), GC-bias etc, but the results may be different since many of the low quality reads may not map to the genome and therefore will not be included in the BAM file.
+
+Running all the QC steps takes a long time, so to save time, we only run the QC on a random selection of 10% of the reads. Random selection of reads can be performed with many different programs. Here we will use samtools:
+
+    samtools view -b -s 0.1 Aligned.out.sorted.bam > Aligned.out.0.1.bam
+    # then index the bamfile
+    # (it is already sorted since you extracted reads from a sorted BAM file)
+    samtools index Aligned.out.0.1.bam
+
+The RseQC package is allready installed at Uppmax. Load the package:
+
+    module add bioinfo-tools
+    module add rseqc/2.6.4
+
+Some steps of the RseQC package require a file with gene annotations in BED format. These can be downloaded from various sources. Some of the more common ones are UCSC, RefSeq and Ensembl. In this case, the RseQC team have already created annotation files in some common formats that can be downloaded from their website, but if you have data for a less studied organism you may need to create a BED-file on your own. 
+
+Two annotation files have already been downloaded into `/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/annotation` for you to use. These are: hg19.HouseKeepingGenes.bed  and hg19_RefSeq.bed. The folder also contains a reduced annotation file hg19_RefSeq_top1000.bed to speed things up. 
+
+In this tutorial we will not run all the different parts of the RseQC package, only the most relevant ones for this experiment. The different scripts in the RseQC package are well described at [their website](http://rseqc.sourceforge.net/), so read the instructions there and specify the input/output files to fit your file names and folder structure. 
+
+The steps that we are going to run are:
+
+1. geneBody_coverage.py
+2. inner_distance.py
+3. junction_saturation.py
+4. read_distribution.py
+
+Note: The geneBody_coverage.py script takes a very long time to run, so we have created a subsection of annotations to run it on. Use the file ` hg19_RefSeq_top1000.bed `. This file was created with the command:
+
+      # head -n 1000 hg19_RefSeq.bed > hg19_RefSeq_top1000.bed
+
+Also note: When running read_distribution.py, an outfile cannot be specified. Instead you need to pipe (">") the output to a file, or look at the output in the terminal.
+
+Run RseQC for one sample and have a look at your output. 
+
+* Do most of your reads map to genes? 
+* Do you have even coverage along the genes? 
+* Do the reads cover most splice junctions? 
+* Based on the inner distance plots, what do you think the average fragment size of the libraries was?
+
+### MultiQC summary of RSeQC output 
+
+We have ran RSeQC and MultiQC on all the samples in the project. The summary report from MultiQC can be found on uppmax `/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/QC/output/multiqc_report_rseqc.html` . 
+
+It was created using commands:
+
+      multiqc -f -d -dd 3 .
+      # since folder structure like: sample_name/qc/read_distribution.txt and so on for the other file types.
+
+Have a look at the reports. What is your conclusion, do your samples look good? Is there anything that looks strange in any sample, or do you feel comfortable using all the samples in your analysis?
+
+## After quantification 
+
+Outlier detection and general overview of data
+
+One of the first steps once you have your libraries mapped to the genome and have filtered out low quality samples is to get a general overview of the samples. Logical first steps are to look for pairwise correlations between the samples, do some simple clustering and run principal component analysis (PCA). With these steps you can easily find out what the variation within your sample groups looks like and detect possible outliers or mixed up samples. We will run this analysis with a few simple R commands, but there are of course other options for how to run this analysis. 
+
+For this exercise we have pre-calculated read counts per gene (according to Ensembl annotations) with commands like:
+
+    # NOTE: Only given for reference
+    #       Not supposed to be executed during the lab
+    samtools view accepted_hits_137_1.bam | \
+     sort > accepted_hits_prehtseq_137_1.sam
+    htseq-count -s no -q accepted_hits_prehtseq_137_1.sam \
+     Homo_sapiens.GRCh37.71.gtf > 137_1.counts
+
+This was run for each of the samples and the counts were combined into a single table. You can get the count table from the data directory. You can run R on UPPMAX, or download the file to your local computer and do the analysis locally if you prefer.
+
+The code to run in R:
+```{r,include=FALSE}
+# data handling
+library(dplyr)
+#library(tidyr)
+#library(stringr)
+
+# plotting
+library(ggplot2)
+#install.packages("GGally")
+library(GGally)
+
+```
+
+```{r read the count data for the analysis }
+
+	# read in the data
+	counts <- read.delim("./data/count_raw.txt",header=TRUE)
+	
+  head(counts)
+
+```
+As you can see, the samples are ordered with the 3 replicates from each group next to each other. So when we are to define colors for the samples we only have to repeat each color 3 times (this may not always be the case!)
+
+```{r define a set of colors that will be used for the dataset }
+
+	sample.def<-c("ctrl", "t2h", "t6h", "t24h")
+  sampleInfo = data.frame( ID = colnames(counts), timePoint = rep(sample.def, each=3) )
+	# define colors:
+	col.def<-c("red","blue","green","magenta")
+	sample.def<-c("ctrl", "t2h", "t6h", "t24h")
+	colors <- rep(sample.def, each=3)
+```
+
+Start with a PCA to se the general distribution. PCA of RNA-seq data is usually performed in log-scale. We also add a pseudo-count of +1 to avoid logging zero (gives infinity). You need to transpose - t() - the data matrix, otherwise you will run PCA on the genes instead of samples.
+
+```{r Do a PCA to identify the biggest variation in the data }
+	myPca <- prcomp(t(log2(counts+1)))
+
+```
+
+
+This creates a list that contains:
+
+* the samples mapping to each PC in myPca$x
+* PC contribution to variance in myPca$sdev
+* PC loadings for each gene in myPca$rotation
+
+Let's first make a simple plot of the first two principal components (PC1 vs PC2):
+
+```{r plot the first two principal components }
+
+  
+  PCPlot = as.data.frame(myPca$x)
+  PCPlot$ID = rownames(PCPlot)
+  PCPlot = inner_join(x = sampleInfo, PCPlot)
+	
+  #Plot the PCA result using ggplot
+  ggplot(data = PCPlot, mapping = aes(PC1, PC2, color = timePoint)) + geom_point() 
+
+	 # If you like to plot to a file 
+	#ggsave("PCAplot.pdf")
+
+```
+Sometimes the first two PCs may not be the ones that will best separate the sample groups, so it is a good idea to look at more PCs.
+Here is one example that shows how to plot the top 5 PCs:
+
+```{r plot the first five principal components }
+	#pdf('pca*plot*5pc.pdf')
+
+  PCPlot2 = PCPlot %>% select(PC1,PC2,PC3,PC4,PC5,timePoint)
+
+  #requires ggally
+  ggpairs(data = PCPlot2 ,mapping = aes(color = timePoint) ,progress = FALSE)
+	#dev.off()
+```
+	
+Another thing to look at is the pairwise correlation between all the samples and see how they group based on correlation. Let's create one matrix with all pairwise Pearson correlations (again in log-space).
+
+```{r pairwise correlation analysis}
+nSamples<-ncol(counts)
+	C<-cor(log2(counts+1),method="pearson")	
+```
+Now create a hierarchical clustering dendrogram using 1-correlation as the distance measure and plot it together with the heatmap of similairities and differences between the samples.
+
+```{r hierarchical clustering dendrogram and heatmap }
+    	d <- as.dist(1-C)
+	  h <- hclust(d,method="ward.D2")
+	dendro <- as.dendrogram(h)
+
+
+	#pdf('correlation_heatmap.pdf')
+	heatmap(C,Colv=dendro,Rowv=dendro)
+	#dev.off()
+```
+
+Do the clusterings agree with what you expect? 
+Which different sample groups are more similar? Are some sample groups more dissimilar compared to the others?
+
+
+
+# Mapping reads to reference
+
+## Using a sequence aligner program called STAR
+
+
+### Data available for exercise
+
+All FASTQ files that you will need for this exercise can be found in
+ 
+	/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/referenceBased/data
+
+on UPPMAX.
+
+If you want to map more files for practice, you can continue with files for additional samples, found in
+	
+	/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/isoform/RAB11FIP5_fastqFiles
+
+on UPPMAX.
+
+
+A pre-built human genome index for STAR is found here
+ 
+	/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/reference/hg19_Gencode14.overhang75
+
+on UPPMAX.
+ 
+
+### Mapping with the program
+Here we will map the reads to the hg19 reference genome using a popular RNA-seq 
+aligner, **STAR**. There are many many features that can be tweaked using STAR. For more information concerning different features that can be used see the [manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf).
+
+Read below for the flags we use for this exercise. Remember to change filenames accordingly 
+so that you can run your program properly and know which files you have used.
+
+To load the STAR module on UPPMAX, execute
+
+     module load bioinfo-tools
+     module load star
+     
+  
+Now you can map the reads from one of the samples (or several; it's up to you 
+which ones) using a command such as the one below.
+  
+	mkdir outDir
+    
+	STAR  --runThreadN N --outSAMstrandField intronMotif --genomeDir /path/to/index \
+	  --readFilesIn /path/to/reads/sample_1.fastq /path/to/reads/sample_2.fastq \
+	  --outFileNamePrefix outDir/
+	
+flags used are 
+
+*  ``--runThreadN N`` specifies the number of threads that will be used by the program.
+*  ``--outSAMstrandField intronMotif`` adds information  (to the SAM output file) required for downstream analysis with Cufflinks
+*  ``--genomeDir /path/to/index`` specifies the directory containing the pre-built genome index
+*  ``--readFilesIn /path/to/reads/sample_1.fastq /path/to/reads/sample_2.fastq`` is where you should list the FASTQ files that you wish to map
+*  ``--outFileNamePrefix outDir`` specifies the output directory
+
+This should run fairly quickly and put a file called ``Aligned.out.sam`` in 
+the directory that you specified with ``--outFileNamePrefix``. 
+
+&#10067; *Look at the output files from STAR, and try to answer the same questions as for HISAT2 above.*
+
+## Converting SAM files to BAM files
+
+If you were able to run HISAT2 and STAR sucessfully, this should have produced files with mapped reads in SAM format. These files need to be converted to *sorted* and *indexed* BAM files for efficient downstream analysis.
+
+You should try to give the BAM files representable names, in order to make it easier to manage your files. A good naming scheme for BAM files is to use names that indicate what you mapped and how. As an example, if you mapped sample 12 using HISAT2 you could create a file named ``sample12_RAB11FIP5.hg19.HISAT2.bam``. 
+
+The most commonly used tool for converting from SAM to BAM is [Samtools](http://www.htslib.org/doc/samtools.html) (follow the link for more information about Samtools).
+
+To load the Samtools module on UPPMAX, execute:
+
+    module load bioinfo-tools
+    module load samtools
+
+The Samtools command to convert from SAM to a sorted BAM file is:
+
+	samtools sort -o output.bam input.sam
+
+Remember to use an appropriate filename instead of ``output.bam``!
+
+Next, we need to index the BAM file.
+
+	samtools index properName.bam
+
+The indexing step should create an index file with the suffix ``.bai``.
+
+You can also get a report on your mapped reads using the samtools command *flagstat*:
+
+	samtools flagstat properName.sorted.bam > properName.sorted.flagstat
+
+Since the BAM file contains all the information from the original SAM file, remember to remove the SAM file once you are finished, in order to free up disk space.
+
+### When you are done...
+
+...compare your answers to the solutions [here](mapping_reads_answers).
+
+
+
+## Using a sequence pseudo-aligner called  Kallisto
+
+*Kallisto* is an "alignment free" RNA-seq quantification method that runs very fast with a small memory footprint, so that it can be run on most laptops. It is a command-line program that can be downloaded as binary executables for Linux or Mac, or in source code format. For a first insight into the program, read [here](https://liorpachter.wordpress.com/2015/05/10/near-optimal-rna-seq-quantification-with-kallisto/) and for the recently published article, see [here](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.3519.html). 
+
+Kallisto is geared towards quantification on the transcript (isoform) level, rather than the gene level (although the latter can also be done by post-processing Kallisto output.) However, read assignment to transcript isoforms cannot (in general) be done unambiguously, so there is an intrinsic "quantification noise" or variability in this process. Kallisto can thus be run either in a single step (which is very fast) or in "bootstrap" mode (which takes longer, but can be done on several processors in parallel) in order to get uncertainty estimates for the expression levels - a kind of error bars for the quantification process. Running with bootstraps is mandatory if you want to perform differential expression analysis of isoforms with Sleuth (see below). 
+
+###  Preparing Sleuth input with Kallisto
+
+
+
+Kallisto is run directly on FASTQ files. We start by loading the Kalisto module on uppmax
+
+```{UPPMAX load kalisto module} 
+  module load bioinfo-tools
+  module load kallisto/0.43.1 
+```
+
+
+Now we will download and merge human cDNA and ncDNA files from ENSEMBL in order to build a Kallisto transcript index. Note that we can concatenate the two gzipped files without unpacking them first. We use both the protein-coding transcripts and the non-coding ones to be able to capture more of the transcriptome.
+
+	wget ftp://ftp.ensembl.org/pub/current_fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+	wget ftp://ftp.ensembl.org/pub/current_fasta/homo_sapiens/ncrna/Homo_sapiens.GRCh38.ncrna.fa.gz
+	cat Homo_sapiens.GRCh38.cdna.all.fa.gz Homo_sapiens.GRCh38.ncrna.fa.gz > Homo_sapiens.GRCh38.rna.fa.gz
+
+Now we can build the transcriptome index. Let's also time it to get a sense of how long it takes.
+	
+```{UPPMAX create kalisto index kalisto module} 
+	
+	kallisto index -i hsGRCh38_kallisto Homo_sapiens.GRCh38.rna.fa.gz
+
+
+```
+It should take less than 10 minutes.
+
+Next, copy the FASTA files from uppmax ``/proj/uppstore2017171/courses/RNAseqWorkshop/downloads/diffExp/FASTQ/`` .
+When that is done, it's time for quantifying the FASTQ files against our Kallisto index with bootstrapping for later use in Sleuth. You could do that one by one, with a command like
+
+```{UPPMAX quantify the reads to the reference} 
+  
+
+    kallisto quant -i hsGRCh38_kallisto -t 4 -b 100 7_111116_AD0341ACXX_137_1_index1_1.fastq.gz 7_111116_AD0341ACXX_137_1_index1_2.fastq.gz -o sample1
+	
+# or in a bash loop:
+
+    for i in {1..12}; do time kallisto/kallisto quant -i hsGRCh38_kallisto -t 4 -b 100 7_111116_AD0341ACXX_137_${i}_index${i}_1.fastq.gz 7_111116_AD0341ACXX_137_${i}_index${i}_2.fastq.gz -o sample${i}; done
+
+```
+
+In this example, we put "-t 4" so we can use up to four processors in the bootstrapping. You may want to modify this value according to the machine you are working on. If you wanted to run Kallisto without bootstraps and just get expression values on a pair of FASTQ files, you would run something like
+
+    kallisto/kallisto quant -i hsGRCh38_kallisto <FILE1>.fastq <FILE2>.fastq -o <OUTPUT_DIR_NAME>
+
+Running Kallisto on all the 12 samples with 100 bootstraps may take an hour or so, depending on your machine and settings. The time on a MacBook Pro with four threads and 16 Gb of RAM was ... minutes.
+
+
+
+## Quantification
+
+Once all the read samples have been mapped to the reference we want to quantify how many of the reads that are mapping to different parts of the genome. In most cases this regions are the genes but you can ask to get counts for other parts of the genome as long as you can provide a annotation file with that information. In most cases the format GTF or GFF3 are the most common formats for genome annotation and the ones that most programs use. 
+
+In our case we are going to use a program called __featureCount__ that is fast and relieable. 
+First load  the module 
+
+```{UPPMAX load the subread module that contains the featureCount program } 
+	module load bioinfo-tools 
+  module load subread/1.5.2
+
+```
+
+Then by providing the mapped read files and the annotation you can quantify how many reads that mapped to your reference. There are many settings that you can use to decide how you want to do the counting. In our case we will count the reads that are in the annotated exons (-t exons) and sum them up per gene (-g gene) . In __featureCount__ this is done by the following command
+
+```{UPPMAX get counts from bamfile and annotation file usings feature count}
+
+# With only one bam file 
+featureCounts -T {threads} -p -t exon -g gene_id -a {input.gtf} -o {output.countTable} bamFiles/file1.bam > results/Counts.featureCount.log
+
+#Or multiple bamfiles. 
+featureCounts -T {threads} -p -t exon -g gene_id -a {input.gtf} -o {output.countTable} bamFiles/*.bam > results/Counts.featureCount.log
+
+
+
+```
+
+This will create a file that contains  a matrix were the rows represents the genes and the columns representes the samples. Feature count will also include some information per gene to see were it is annotated in the reference. The file is easy to open in R for further analysis. 
+
+```{r  view the feature count table }
+
+counts <- read.delim("./data/count_raw.txt",header=TRUE)
+head(counts)
+
+
+
+```
+
+
+
+
+
+
+**End of document**
